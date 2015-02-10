@@ -1,101 +1,11 @@
-<script src=lib1.js></script>
-
-<canvas id='canvas1' width='600' height='600'></canvas>
-
-<script id='my_vertex_shader' type='x-shader/x-vertex'>
-   attribute vec3 aPosition;
-   varying   vec3 vPosition;
-   void main() {
-      gl_Position = vec4(aPosition, 1.0);
-      vPosition = aPosition;
-   }
-</script>
-
-<!!==========================================================================
-
-   Below is the fragment shader from class (with some slight improvements).
-
-   Your assignment is to write your own interesting fragment shader program.
-   Try to have fun with it -- use "uTime" to create animated patterns, and
-   "uCursor" to make it responsive to a user's mouse gestures.
-
-   Try to make something as completely different from my "easter egg" example
-   as possible :-)
-
-============================================================================>
-
-<script id='my_fragment_shader' type='x-shader/x-fragment'>
-   precision mediump float;
-   uniform float uTime;
-   uniform vec3  uCursor;
-   varying vec3  vPosition;
-
-   float rand(vec2 co){
-    return fract(sin(dot(co.xy ,vec2(12.9898,78.233))) * 43758.5453);
-   }
-
-   void main() {
-   
-      vec3 color = vec3(0., 0., 0.);
-      float x = vPosition.x;
-      float y = vPosition.y;
-      float z = 0.0;
-      float t = 0.0; 
-      float t1 = 0.0;
-      float height = 0.4;
-      if (abs(x*3.0) + 1.0 - height + y < 0.05 && y < -1.0+height){
-         z = 0.2;
-         //t1 = abs(sin(x*50.0+uTime*5.0)*0.3+0.5*cos((-y)*50.0)+z);
-         t1 = sin((-y)-height)*0.5;
-         t = abs(sin(x*10.0+y*20.0+uTime*5.0));
-         color = vec3(t, t1, 0.0);
-      }
-      else{
-         float rr1[150];
-         float h = (uCursor.y+1.0)*1.5;
-         float w = (uCursor.x);
-         for (int i = 0; i<150; i++){
-            float ran = rand(vec2(float(i), float(i*i)));
-            float ran1 = (ran-0.5 + w*1.5)*0.5;
-            float ran2 = ran*0.2 + 0.8;
-            //float ran = 0.2;
-            float t1 = cos(uTime-ran*50.)*h*ran2-1.0+height;
-            float t2 = sin(uTime-ran*50.);
-            float t3 = asin(t2)*ran1+1.57*ran1;
-            //rr1[i] = ((x-t3)*(x-t3) + (y-t1*0.5+0.75)*(y-t1*0.5+0.75))*pow(2.0,14.0);
-            rr1[i] = ((x-t3)*(x-t3) + (y-t1)*(y-t1))*pow(2.0,14.0);
-            if (rr1[i] < 1.0){
-               t = 1.0;
-               color = vec3(t, t, t*0.75);
-            }
-
-         }
-         if (y<-1.0+height){
-            t = 0.0;
-            color = vec3(t, t, t*0.5);
-         }
-         //color = vec3(t, t, t*0.5);
-      }
-
-      //float t = abs(x) + 0.5 * sin(uTime*3.0 );
-      //color = vec3(t, t, t*0.5);
-      gl_FragColor = vec4(color, 1);
-
-
-
-
-
-
-
-
-
-
-
-   }
-</script>
-
-<script>
-start_gl('canvas1', document.getElementById('my_vertex_shader'  ).innerHTML,
-                    document.getElementById('my_fragment_shader').innerHTML);
-</script>
-
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Computer Graphics</title>
+</head>
+<body>
+  <h1>Computer Graphic HW Assignments</h1>
+  <h3>Xiaoyu Xu</h3>
+  <a href="http://xuxiaoyu89.github.io/CG/hw1/">hw1</a>
+</body>
+</html>

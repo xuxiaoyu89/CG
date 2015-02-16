@@ -77,7 +77,7 @@
       // YOU NEED TO COMPUTE V AND W TO CREATE THE RAY FOR THIS PIXEL,
       // USING vPosition.x AND vPosition.y.
       vec3 V, W;
-      V = vec3(c.x, c.y, 10.0);
+      V = vec3(c.x, c.y, 2.0);
       W = normalize(vec3(V.x-vPosition.x, V.y-vPosition.y, V.z));
       Ldir = W;
 

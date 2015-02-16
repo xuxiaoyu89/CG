@@ -37,9 +37,9 @@
       float b = 2.*dot(W, V-S.xyz);
       float c = dot(V-S.xyz, V-S.xyz) - pow(S.w, 2.0);
       
-      float dsquare = pow(b, 2.0) - 4 * c;
+      float dsquare = pow(b, 2.0) - 4. * c;
       float result;
-      if (dsquare >= 0){
+      if (dsquare >= 0.){
          result = (sqrt(dsquare) - b)/2.0;
          return result;
       }

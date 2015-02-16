@@ -60,7 +60,7 @@
       // USE A SIMPLE APPROXIMATION SUCH AS: ambient = material / 5.;
       // ambient + lightColor * diffuse * max(0, normal • lightDirection)
       vec3 ambient = material/10.;
-      vec3 diffuse = material/1.25;
+      vec3 diffuse = material/3;
       vec3 normal = (point-sphere.xyz)/sphere.w;
       color = ambient + Lrgb*diffuse*max(0., dot(normal, Ldir));
       return color;
@@ -69,7 +69,7 @@
    void main(void) {
       vec2 c = uCursor.xy;
 
-      Lrgb = vec3(1.,.5,0.);
+      Lrgb = vec3(1., 1., 1.);
       // normalize(): normalize to length 1
       // dot(): dot product
       // Ldir = normalize(vec3(c.x, c.y, 1. - 2. * dot(c, c)));
@@ -84,7 +84,7 @@
       // YOU NEED TO SET x,y,z AND r FOR sphere.
       sphere = vec4(0., 0., 0., 0.5);
       // YOU NEED TO SET r,g,b FOR material.
-      material = vec3(0.5, 0., 1.0);
+      material = vec3(1., 1., 1.0);
       
       vec3 color = vec3(0., 0., 0.);
       float t = raySphere(V, W, sphere);

@@ -20,7 +20,7 @@
    uniform float uTime;
    uniform vec3  uCursor;
    varying vec3  vPosition;
-   uniform int num;
+   const int num = 2;
 
    vec4 sphere[num];
    vec3 material;
@@ -74,7 +74,6 @@
 
    void main(void) {
       vec2 c = uCursor.xy;
-      num = 2;
       Lrgb = vec3(1., 1., 1.);
       // normalize(): normalize to length 1
       // dot(): dot product
@@ -99,7 +98,7 @@
       for (int i=0; i<num; i++){
          currR2[i] = pow(vPosition.x - sphere[i].x, 2.) + pow(vPosition.y - sphere[i].y, 2.);
          float r2 = pow(sphere[i].w, 2.0);
-         if (currR2[i] <= r2
+         if (currR2[i] <= r2)
             z = sqrt(pow(r2 - currR2[i]);
          else
             z = 0.;

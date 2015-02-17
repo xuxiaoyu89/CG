@@ -99,7 +99,7 @@
          currR2[i] = pow(vPosition.x - sphere[i].x, 2.) + pow(vPosition.y - sphere[i].y, 2.);
          float r2 = pow(sphere[i].w, 2.0);
          if (currR2[i] <= r2)
-            z = sqrt(pow(r2 - currR2[i]);
+            z = sqrt(r2 - currR2[i]);
          else
             z = 0.;
          W = normalize(vec3(vPosition.x-V.x, vPosition.y-V.y, z-V.z));

@@ -91,7 +91,7 @@
       vec3 color = vec3(0., 0., 0.);
       // YOU NEED TO SET x,y,z AND r FOR sphere.
       sphere[0] = vec4(0., 0., 0., 0.5);
-      sphere[1] = vec4(.75, .75, 0., 0.1);
+      sphere[1] = vec4(0., 0.75*sin(uTime), 0.75*cos(uTime), 0.1);
       
       //float currR2 = pow(vPosition.x, 2.) + pow(vPosition.y, 2.);
       float currR2[num];

@@ -78,7 +78,8 @@
       // USING vPosition.x AND vPosition.y.
       vec3 V, W;
       V = vec3(c.x, c.y, 1.5);
-      W = normalize(vec3(vPosition.x-V.x, vPosition.y-V.y, -V.z));
+      float z = sqrt(0.25 - pow(c.x, 2.) - pow(c.y, 2.));
+      W = normalize(vec3(vPosition.x-V.x, vPosition.y-V.y, z-V.z));
       Ldir = W;
 
       // YOU NEED TO SET x,y,z AND r FOR sphere.

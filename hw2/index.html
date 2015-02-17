@@ -94,7 +94,7 @@
       
       vec3 color = vec3(0., 0., 0.);
       float t = raySphere(V, W, sphere);
-      if (t < 10000.)
+      if (t < 10000. && currR2 <= 0.25)
          color = shadeSphere(V + t * W, sphere, material);
 
       gl_FragColor = vec4(sqrt(color), 1.); // Do Gamma correction.

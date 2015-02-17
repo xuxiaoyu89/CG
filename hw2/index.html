@@ -79,7 +79,7 @@
       vec3 V, W;
       V = vec3(c.x, c.y, 1.5);
       float z;
-      currR2 = pow(vPosistion.x, 2.) + pow(vPosition.y, 2.);
+      float currR2 = pow(vPosition.x, 2.) + pow(vPosition.y, 2.);
       if (currR2 <= 0.25)
         z = sqrt(0.25 - currR2);
       else

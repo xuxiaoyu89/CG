@@ -105,7 +105,7 @@
          W = normalize(vec3(vPosition.x-V.x, vPosition.y-V.y, z-V.z));
          Ldir = W;
          float t = raySphere(V, W, sphere[i]);
-         if ( t < 10000. && currR2 <= r2 )
+         if ( t < 10000. && currR2[i] <= r2 )
             color = shadeSphere(vec3(vPosition.x, vPosition.y, z), sphere[i], material);
          gl_FragColor = vec4(sqrt(color), 1.); // Do Gamma correction.
       }

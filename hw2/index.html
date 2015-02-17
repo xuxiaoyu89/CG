@@ -40,7 +40,7 @@
       float dsquare = pow(b, 2.0) - 4. * c;
       float result;
       if (dsquare >= 0.){
-         result = (sqrt(dsquare) - b)/2.0;
+         result = (-sqrt(dsquare) - b)/2.0;
          return result;
       }
       return 10000.;

@@ -77,6 +77,8 @@
       // YOU NEED TO COMPUTE V AND W TO CREATE THE RAY FOR THIS PIXEL,
       // USING vPosition.x AND vPosition.y.
       vec3 V, W;
+      
+      //the position of the light source.
       V = vec3(c.x, c.y, 1.5);
       float z;
       float currR2 = pow(vPosition.x, 2.) + pow(vPosition.y, 2.);
@@ -94,8 +96,11 @@
       
       vec3 color = vec3(0., 0., 0.);
       float t = raySphere(V, W, sphere);
+      
+      
+      
       if (t < 10000. && currR2 <= 0.25)
-         color = shadeSphere(V + t * W, sphere, material);
+         color = shadeSphere(vec3(vPosition.x, vPosition.y, z), sphere, material);
 
       gl_FragColor = vec4(sqrt(color), 1.); // Do Gamma correction.
    }

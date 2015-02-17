@@ -20,8 +20,9 @@
    uniform float uTime;
    uniform vec3  uCursor;
    varying vec3  vPosition;
+   uniform int num;
 
-   vec4 sphere;
+   vec4 sphere[num];
    vec3 material;
 
    vec3 Lrgb;
@@ -73,7 +74,7 @@
 
    void main(void) {
       vec2 c = uCursor.xy;
-
+      num = 2;
       Lrgb = vec3(1., 1., 1.);
       // normalize(): normalize to length 1
       // dot(): dot product
@@ -86,28 +87,29 @@
       //the position of the light source.
       V = vec3(c.x, c.y, 1.0);
       float z;
-      float currR2 = pow(vPosition.x, 2.) + pow(vPosition.y, 2.);
-      if (currR2 <= 0.25)
-        z = sqrt(0.25 - currR2);
-      else
-        z = 0.;
-      W = normalize(vec3(vPosition.x-V.x, vPosition.y-V.y, z-V.z));
-      Ldir = W;
-
-      // YOU NEED TO SET x,y,z AND r FOR sphere.
-      sphere = vec4(0., 0., 0., 0.5);
       // YOU NEED TO SET r,g,b FOR material.
       material = vec3(1., 0.8, 0.5);
-      
       vec3 color = vec3(0., 0., 0.);
-      float t = raySphere(V, W, sphere);
+      // YOU NEED TO SET x,y,z AND r FOR sphere.
+      sphere[0] = vec4(0., 0., 0., 0.5);
+      sphere[1] = vec4(.75, .75, 0., 0.1);
       
-      
-      
-      if (t < 10000. && currR2 <= 0.25)
-         color = shadeSphere(vec3(vPosition.x, vPosition.y, z), sphere, material);
-
-      gl_FragColor = vec4(sqrt(color), 1.); // Do Gamma correction.
+      //float currR2 = pow(vPosition.x, 2.) + pow(vPosition.y, 2.);
+      float currR2[num];
+      for (int i=0; i<num; i++){
+         currR2[i] = pow(vPosition.x - sphere[i].x, 2.) + pow(vPosition.y - sphere[i].y, 2.);
+         float r2 = pow(sphere[i].w, 2.0);
+         if (currR2[i] <= r2
+            z = sqrt(pow(r2 - currR2[i]);
+         else
+            z = 0.;
+         W = normalize(vec3(vPosition.x-V.x, vPosition.y-V.y, z-V.z));
+         Ldir = W;
+         float t = raySphere(V, W, sphere[i]);
+         if ( t < 10000. && currR2 <= r2 )
+            color = shadeSphere(vec3(vPosition.x, vPosition.y, z), sphere[i], material);
+         gl_FragColor = vec4(sqrt(color), 1.); // Do Gamma correction.
+      }
    }
 </script>
 

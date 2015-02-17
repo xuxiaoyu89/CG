@@ -59,7 +59,7 @@
       // FOR THE AMBIENT COMPONENT OF THE DIFFUSE SHADING, YOU CAN
       // USE A SIMPLE APPROXIMATION SUCH AS: ambient = material / 5.;
       // ambient + lightColor * diffuse * max(0, normal • lightDirection)
-      vec3 ambient = material/10.;
+      vec3 ambient = material/30.;
       vec3 diffuse = material/1.25;
       vec3 normal = (point-sphere.xyz)/sphere.w;
       if(dot(normal, Ldir) < 0.){

@@ -62,7 +62,7 @@
       vec3 ambient = material/10.;
       vec3 diffuse = material/1.25;
       vec3 normal = (point-sphere.xyz)/sphere.w;
-      color = ambient + Lrgb * diffuse * dot(normal, Ldir);
+      color = ambient + Lrgb * diffuse * max(0.0, dot(normal, Ldir));
       return color;
    }
 

@@ -60,7 +60,7 @@
       // FOR THE AMBIENT COMPONENT OF THE DIFFUSE SHADING, YOU CAN
       // USE A SIMPLE APPROXIMATION SUCH AS: ambient = material / 5.;
       // ambient + lightColor * diffuse * max(0, normal • lightDirection)
-      vec3 ambient = material/20.;
+      vec3 ambient = material/25.;
       vec3 diffuse = material/4.0;
       vec3 normal = (point-sphere.xyz)/sphere.w;
       color = ambient;
@@ -74,7 +74,7 @@
 
    void main(void) {
       vec2 c = uCursor.xy;
-      Lrgb[0] = vec3(1., 0.0, 0.0);
+      Lrgb[0] = vec3(1.0, 1.0, 1.0);
       Lrgb[1] = vec3(1.0, 1.0, 1.0);
       // normalize(): normalize to length 1
       // dot(): dot product
@@ -92,8 +92,8 @@
       material = vec3(1., 0.8, 0.5);
       vec3 color = vec3(0., 0., 0.);
       // YOU NEED TO SET x,y,z AND r FOR sphere.
-      sphere[0] = vec4(0., 0., 0., 0.5);
-      sphere[1] = vec4(0.75*cos(uTime/5.), 0.75*sin(uTime/5.), 0., 0.1);
+      sphere[0] = vec4(0., 0., 0., 0.4);
+      sphere[1] = vec4(0.75*cos(uTime/5.), 0.75*sin(uTime/5.), 0., 0.15);
       
       //float currR2 = pow(vPosition.x, 2.) + pow(vPosition.y, 2.);
       float currR2[num];

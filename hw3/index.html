@@ -65,8 +65,12 @@
       vec3 normal = (point-sphere.xyz)/sphere.w;
       color = ambient;
       for (int i=0; i<2; i++){
-         if (inShadow[i] == 0 && dot(normal, Ldir[i]) < 0.){
-            color -= Lrgb[i] * diffuse * dot(normal, Ldir[i]);
+         if (inShadow[i] == 0){
+            color -= Lrgb[i] * diffuse * min(0.0, dot(normal, Ldir[i]));
+            // R = 2*dot(N, L)*N - L
+            vec3 R = 2.0 * dot(normal, -Ldir[i]) * normal - (-Ldir[i]);
+            color += pow(max(0.0, dot(vec3(0.0,0.0,1.0), R)), 40.0);   
+            
          }
       }
       return color;

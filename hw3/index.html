@@ -1,8 +1,11 @@
 <script src=lib1.js></script>
 
-<body bgcolor=black>
+<body bgcolor=white>
 <center>
+<p>Blinn reflection and boolean intersection</p>
 <td><canvas id='canvas1' width=700 height=700></canvas></td>
+<p>Phong reflection and reflection</p>
+<td><canvas id='canvas2' width=700 height=700></canvas></td>
 </center>
 </body>
 
@@ -21,14 +24,172 @@
    uniform vec3  uCursor;
    varying vec3  vPosition;
    const int num = 2;
-   const int lightNum = 2;
+   const int lightNum = 1;
    vec4 sphere[num];
-   vec3 material;
+   vec3 material[num];
 
    vec3 Lrgb[num];
    vec3 Ldir[num];
 
    vec4 seenSphere;
+   vec3 seenMaterial;
+   const float NOT_FOUND = 10000.;
+
+   float foundT;
+
+   // Compute intersection of a ray with a sphere, if any.  Return t.
+   // If there is no intersection, return 10000.
+
+   void findIntersection(vec3 V, vec3 W) {
+      //foundT = NOT_FOUND;
+      // YOU NEED TO COMPUTE t, BY SETTING UP AND THEN SOLVING A QUADRATIC EQUATION.
+      //t**2 + 2 (W • (V-s.xyz)) t + ((V-s.xyz) • (V-s.xyz)) - r2 = 0
+      // loop for the spheres;
+      float inPos[num];
+      float outPos[num];
+      float tin = 0.0;
+      float tout = 10000.0;
+      int inMaxIndex = -1;
+      int outMinIndex = -1;
+      foundT = NOT_FOUND;
+      int count = 0;
+
+      for (int i=0; i<num; i++){
+         float b = 2.*dot(W, V-sphere[i].xyz);
+         float c = dot(V-sphere[i].xyz, V-sphere[i].xyz) - pow(sphere[i].w, 2.0);
+         float dsquare = pow(b, 2.0) - 4. * c;
+         float temp;
+         if (dsquare > 0.){
+            count += 2;
+            inPos[i] = (-sqrt(dsquare) - b)/2.0;
+            outPos[i] = (sqrt(dsquare) - b)/2.0;
+            if (inPos[i] > tin){
+               tin = inPos[i];
+               inMaxIndex = i;
+               seenSphere = sphere[i];
+               seenMaterial = material[i];
+            }
+            if (outPos[i] < tout){
+               tout = outPos[i];
+               outMinIndex = i;
+            }
+         }
+         else{
+            inPos[i] = -1.0;
+            outPos[i] = -1.0;
+         }
+      }
+      if (count == 4) {
+         if (tin < tout){
+            foundT = tin;
+         }
+      }
+   }
+
+
+   void raySphere(vec3 V, vec3 W) {
+      foundT = NOT_FOUND;
+      // YOU NEED TO COMPUTE t, BY SETTING UP AND THEN SOLVING A QUADRATIC EQUATION.
+      //t**2 + 2 (W • (V-s.xyz)) t + ((V-s.xyz) • (V-s.xyz)) - r2 = 0
+      // loop for the spheres;
+      for (int i=0; i<num; i++){
+         float b = 2.*dot(W, V-sphere[i].xyz);
+         float c = dot(V-sphere[i].xyz, V-sphere[i].xyz) - pow(sphere[i].w, 2.0);
+         float dsquare = pow(b, 2.0) - 4. * c;
+         float temp;
+         if (dsquare >= 0.){
+            temp = (-sqrt(dsquare) - b)/2.0;
+            if (temp < foundT && temp > 0.){
+               foundT = temp;
+               seenSphere = sphere[i];
+               seenMaterial = material[i];
+            }
+         }
+      }
+   }
+
+
+   // Diffusely shade a sphere.
+   //    point is the x,y,z position of the surface point.
+   //    sphere is the x,y,z,r definition of the sphere.
+   //    material is the r,g,b color of the sphere.
+   
+   vec3 shadeSphere(vec3 point, vec4 sphere, vec3 material, vec3 W) {
+      vec3 color = vec3(0.,0.,0.);
+
+      // YOU NEED TO COMPUTE COLOR FOR A DIFFUSELY SHADED SPHERE.
+
+      // FOR THE AMBIENT COMPONENT OF THE DIFFUSE SHADING, YOU CAN
+      // USE A SIMPLE APPROXIMATION SUCH AS: ambient = material / 5.;
+      // ambient + lightColor * diffuse * max(0, normal • lightDirection)
+
+      vec3 ambient = material/25.;
+      vec3 diffuse = material/4.0;
+      vec3 N = normalize((point - sphere.xyz) / sphere.w);
+      color = ambient;
+      for (int i=0; i<lightNum; i++){
+         color += Lrgb[i] * diffuse * max(0.0, dot(N, -Ldir[i]));
+            //R = 2*dot(N, L)*N - L
+         // E is the constant vector everywhere;
+         vec3 H = (N-Ldir[i])/2.0; 
+         //vec3 R = 2.0 * dot(N, -Ldir[i]) * N - (-Ldir[i]);
+         color += pow(max(0.0, dot(H, N)), 90.0);
+      }
+      return color;
+   }
+
+
+   void main(void) {
+      vec2 c = uCursor.xy;
+      Lrgb[0] = vec3(1.0, 1.0, 1.0);
+      Lrgb[1] = vec3(1.0, 1.0, 1.0);
+
+      Ldir[0] = normalize(vec3(vPosition.x-c.x, vPosition.y-c.y, -.5));
+      // Ldir[0] = normalize(vec3(0., 2., -1.));
+      // normalize(): normalize to length 1
+      // dot(): dot product
+      // Ldir = normalize(vec3(c.x, c.y, 1. - 2. * dot(c, c)));
+      
+      // YOU NEED TO COMPUTE V AND W TO CREATE THE RAY FOR THIS PIXEL,
+      // USING vPosition.x AND vPosition.y.
+      vec3 V = vec3(0.0, 0.0, 5.0);
+      vec3 W = normalize(vec3(vPosition.x, vPosition.y, -5.0));
+      
+      // YOU NEED TO SET r,g,b FOR material.
+      material[0] = vec3(1.0, 0.8, 0.5);
+      material[1] = vec3(0.0, 1.0, 1.0);
+      vec3 color = vec3(0., 0., 0.);
+      // YOU NEED TO SET x,y,z AND r FOR sphere.
+      sphere[0] = vec4(0.0, 0.0, 0.0, 0.4);
+      sphere[1] = vec4(0.0, 0.3, 0.0, 0.5);
+
+
+      findIntersection(V, W);
+      if(foundT < 10000. && foundT > 0.0){
+         //color = vec3(1., 1., 1.);
+         color = shadeSphere(V + foundT*W, seenSphere, seenMaterial, W);
+         gl_FragColor = vec4(sqrt(color), 1.); // Do Gamma correction.
+      }
+      gl_FragColor = vec4(sqrt(color), 1.); // Do Gamma correction.
+   }
+</script>
+
+
+<script id='my_fragment_shader2' type='x-shader/x-fragment'>
+   precision mediump float;
+   uniform float uTime;
+   uniform vec3  uCursor;
+   varying vec3  vPosition;
+   const int num = 2;
+   const int lightNum = 2;
+   vec4 sphere[num];
+   vec3 material[num];
+
+   vec3 Lrgb[num];
+   vec3 Ldir[num];
+
+   vec4 seenSphere;
+   vec3 seenMaterial;
    const float NOT_FOUND = 10000.;
 
    float foundT;
@@ -51,6 +212,7 @@
             if (temp < foundT && temp > 0.){
                foundT = temp;
                seenSphere = sphere[i];
+               seenMaterial = material[i];
             }
          }
       }
@@ -80,12 +242,15 @@
             color += Lrgb[i] * diffuse * max(0.0, dot(N, -Ldir[i]));
             //R = 2*dot(N, L)*N - L
             vec3 R = 2.0 * dot(N, -Ldir[i]) * N - (-Ldir[i]);
-            color += pow(max(0.0, dot(vec3(0.0,0.0,1.0), R)), 30.0);   
-            
+            color += pow(max(0.0, dot(-W, R)), 30.0);   
+            //W' = 2 (N • (-W)) N - (-W)
+            vec3 W1 = 2.0 * dot(N, -W)*N -(-W);
+            raySphere(point+0.001*W1, W1);
+            if (foundT != 10000.){
+               color += seenMaterial;
+            }
          }
       }
-      
-      
       return color;
    }
 
@@ -95,7 +260,7 @@
       Lrgb[0] = vec3(1.0, 1.0, 1.0);
       Lrgb[1] = vec3(1.0, 1.0, 1.0);
 
-      Ldir[1] = normalize(vec3(vPosition.x-c.x, vPosition.y-c.y, -3.0));
+      Ldir[1] = normalize(vec3(vPosition.x-c.x, vPosition.y-c.y, -2.0));
       Ldir[0] = normalize(vec3(0., 2., -1.));
       // normalize(): normalize to length 1
       // dot(): dot product
@@ -107,20 +272,19 @@
       vec3 W = normalize(vec3(vPosition.x, vPosition.y, -5.0));
       
       // YOU NEED TO SET r,g,b FOR material.
-      material = vec3(1., 0.8, 0.5);
+      material[0] = vec3(0.0, 0.8, 0.5);
+      material[1] = vec3(1., 1., 0);
       vec3 color = vec3(0., 0., 0.);
       // YOU NEED TO SET x,y,z AND r FOR sphere.
-      sphere[0] = vec4(0., 0., 0.0, 0.4);
-      sphere[1] = vec4(0.0, 0.75*sin(uTime/1.), 0.75*cos(uTime/1.), 0.15);
+      sphere[0] = vec4(-0.2, 0., 0.0, 0.4);
+      sphere[1] = vec4(0.2, 0.75*sin(uTime/1.), 0.75*cos(uTime/1.), 0.15);
       raySphere(V, W);
       if(foundT < 10000. && foundT > 0.0){
          //color = vec3(1., 1., 1.);
-         color = shadeSphere(V + foundT*W, seenSphere, material, W);
+         color = shadeSphere(V + foundT*W, seenSphere, seenMaterial, W);
          gl_FragColor = vec4(sqrt(color), 1.); // Do Gamma correction.
       }
       gl_FragColor = vec4(sqrt(color), 1.); // Do Gamma correction.
-
-
 
    }
 </script>
@@ -128,5 +292,7 @@
 <script>
 start_gl('canvas1', document.getElementById('my_vertex_shader'  ).innerHTML,
                     document.getElementById('my_fragment_shader').innerHTML);
+start_gl('canvas2', document.getElementById('my_vertex_shader'  ).innerHTML,
+                    document.getElementById('my_fragment_shader2').innerHTML);
 </script>
 

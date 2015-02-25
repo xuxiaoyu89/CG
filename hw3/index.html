@@ -21,38 +21,47 @@
    uniform vec3  uCursor;
    varying vec3  vPosition;
    const int num = 2;
-
+   const int lightNum = 2;
    vec4 sphere[num];
    vec3 material;
 
    vec3 Lrgb[num];
    vec3 Ldir[num];
 
+   vec4 seenSphere;
+   const float NOT_FOUND = 10000.;
+
+   float foundT;
+
    // Compute intersection of a ray with a sphere, if any.  Return t.
    // If there is no intersection, return 10000.
 
-   float raySphere(vec3 V, vec3 W, vec4 S) {
-
+   void raySphere(vec3 V, vec3 W) {
+      foundT = NOT_FOUND;
       // YOU NEED TO COMPUTE t, BY SETTING UP AND THEN SOLVING A QUADRATIC EQUATION.
       //t**2 + 2 (W • (V-s.xyz)) t + ((V-s.xyz) • (V-s.xyz)) - r2 = 0
-      float b = 2.*dot(W, V-S.xyz);
-      float c = dot(V-S.xyz, V-S.xyz) - pow(S.w, 2.0);
-      
-      float dsquare = pow(b, 2.0) - 4. * c;
-      float result;
-      if (dsquare >= 0.){
-         result = (sqrt(dsquare) - b)/2.0;
-         return result;
+      // loop for the spheres;
+      for (int i=0; i<num; i++){
+         float b = 2.*dot(W, V-sphere[i].xyz);
+         float c = dot(V-sphere[i].xyz, V-sphere[i].xyz) - pow(sphere[i].w, 2.0);
+         float dsquare = pow(b, 2.0) - 4. * c;
+         float temp;
+         if (dsquare >= 0.){
+            temp = (-sqrt(dsquare) - b)/2.0;
+            if (temp < foundT && temp > 0.){
+               foundT = temp;
+               seenSphere = sphere[i];
+            }
+         }
       }
-      return 10000.;
    }
 
    // Diffusely shade a sphere.
    //    point is the x,y,z position of the surface point.
    //    sphere is the x,y,z,r definition of the sphere.
    //    material is the r,g,b color of the sphere.
-
-   vec3 shadeSphere(vec3 point, vec4 sphere, vec3 material, int inShadow[2]) {
+   
+   vec3 shadeSphere(vec3 point, vec4 sphere, vec3 material, vec3 W) {
       vec3 color = vec3(0.,0.,0.);
 
       // YOU NEED TO COMPUTE COLOR FOR A DIFFUSELY SHADED SPHERE.
@@ -60,81 +69,59 @@
       // FOR THE AMBIENT COMPONENT OF THE DIFFUSE SHADING, YOU CAN
       // USE A SIMPLE APPROXIMATION SUCH AS: ambient = material / 5.;
       // ambient + lightColor * diffuse * max(0, normal • lightDirection)
+
       vec3 ambient = material/25.;
       vec3 diffuse = material/4.0;
-      vec3 normal = (point-sphere.xyz)/sphere.w;
+      vec3 N = normalize((point - sphere.xyz) / sphere.w);
       color = ambient;
-      for (int i=0; i<2; i++){
-         if (inShadow[i] == 0){
-            color -= Lrgb[i] * diffuse * min(0.0, dot(normal, Ldir[i]));
-            // R = 2*dot(N, L)*N - L
-            vec3 R = 2.0 * dot(normal, -Ldir[i]) * normal - (-Ldir[i]);
-            color += pow(max(0.0, dot(vec3(0.0,0.0,1.0), R)), 40.0);   
+      for (int i=0; i<lightNum; i++){
+         raySphere(point-0.001*Ldir[i], -Ldir[i]);
+         if (foundT == 10000.){
+            color += Lrgb[i] * diffuse * max(0.0, dot(N, -Ldir[i]));
+            //R = 2*dot(N, L)*N - L
+            vec3 R = 2.0 * dot(N, -Ldir[i]) * N - (-Ldir[i]);
+            color += pow(max(0.0, dot(vec3(0.0,0.0,1.0), R)), 30.0);   
             
          }
       }
+      
+      
       return color;
    }
+
 
    void main(void) {
       vec2 c = uCursor.xy;
       Lrgb[0] = vec3(1.0, 1.0, 1.0);
       Lrgb[1] = vec3(1.0, 1.0, 1.0);
+
+      Ldir[1] = normalize(vec3(vPosition.x-c.x, vPosition.y-c.y, -3.0));
+      Ldir[0] = normalize(vec3(0., 2., -1.));
       // normalize(): normalize to length 1
       // dot(): dot product
       // Ldir = normalize(vec3(c.x, c.y, 1. - 2. * dot(c, c)));
       
       // YOU NEED TO COMPUTE V AND W TO CREATE THE RAY FOR THIS PIXEL,
       // USING vPosition.x AND vPosition.y.
-      vec3 V[num], W;
+      vec3 V = vec3(0.0, 0.0, 5.0);
+      vec3 W = normalize(vec3(vPosition.x, vPosition.y, -5.0));
       
-      //the position of the light source.
-      V[0] = vec3(c.x, c.y, 0.0);
-      V[1] = vec3(1.5, 0., 1.0);
-      float z;
       // YOU NEED TO SET r,g,b FOR material.
       material = vec3(1., 0.8, 0.5);
       vec3 color = vec3(0., 0., 0.);
       // YOU NEED TO SET x,y,z AND r FOR sphere.
-      sphere[0] = vec4(0., 0., 0., 0.4);
-      sphere[1] = vec4(0.75*cos(uTime/5.), 0.75*sin(uTime/5.), 0., 0.15);
-      
-      //float currR2 = pow(vPosition.x, 2.) + pow(vPosition.y, 2.);
-      float currR2[num];
-      for (int i=0; i<num; i++){
-         currR2[i] = pow(vPosition.x - sphere[i].x, 2.) + pow(vPosition.y - sphere[i].y, 2.);
-         float r2 = pow(sphere[i].w, 2.0);
-         if (currR2[i] <= r2)
-            z = sqrt(r2 - currR2[i]);
-         else
-            z = 0.;
-
-         int inShadow[num];
-         float t = 10000.;
-         //loop for num light sources
-         for (int l=0; l<num; l++){
-            inShadow[l] = 0;
-            W = normalize(vec3(vPosition.x-V[l].x, vPosition.y-V[l].y, z-V[l].z));
-            Ldir[l] = W;
-            t = raySphere(V[l], W, sphere[i]);
-            float minT = 10000.0;
-            for (int j=0; j<num; j++){
-               if (j != i){
-                  float tempT = raySphere(V[l], W, sphere[j]);
-                  if(tempT < minT && tempT > 0.){
-                     minT = tempT;
-                  }
-               }
-            }
-            if(minT < t){
-               inShadow[l] = 1;
-            }
-         }
-         
-         if ( t < 10000. && currR2[i] <= r2 )
-            color = shadeSphere(vec3(vPosition.x, vPosition.y, z), sphere[i], material, inShadow);
+      sphere[0] = vec4(0., 0., 0.0, 0.4);
+      sphere[1] = vec4(0.0, 0.75*sin(uTime/1.), 0.75*cos(uTime/1.), 0.15);
+      raySphere(V, W);
+      if(foundT < 10000. && foundT > 0.0){
+         //color = vec3(1., 1., 1.);
+         color = shadeSphere(V + foundT*W, seenSphere, material, W);
          gl_FragColor = vec4(sqrt(color), 1.); // Do Gamma correction.
       }
+      gl_FragColor = vec4(sqrt(color), 1.); // Do Gamma correction.
+
+
+
    }
 </script>
 

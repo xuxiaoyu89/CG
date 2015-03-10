@@ -31,6 +31,7 @@ function initCanvas(id) {
 }
 function tick() {
    time = (new Date()).getTime() / 1000 - startTime;
+   stopFlag = false;
    for (var i = 0 ; i < canvases.length ; i++)
       if (canvases[i].update !== undefined) {
    var canvas = canvases[i];
@@ -38,6 +39,9 @@ function tick() {
          g.clearRect(0, 0, canvas.width, canvas.height);
          canvas.update(g);
       }
-   setTimeout(tick, 1000/60);
+   if (stopFlag === false){
+      setTimeout(tick, 1000/60);
+   }
+   //setTimeout(tick, 1000/60);
 }
 tick();

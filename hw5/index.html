@@ -4,27 +4,43 @@
 	</head>
 	
 	<body>
-		<p>This is my HW5</p>
+		<p>This is a boring game, the goal of the game is to match the two object by moving the left one</p>
+		<p>Have a try!</p>
 		<table>
 			<tr>
 				<td>
-					<canvas id="canvas1" width=300 height=300 style="border:1px solid #d3d3d3;"></canvas>
+					<canvas id="canvas1" width=800 height=500 style="border:1px solid #d3d3d3;"></canvas>
 				</td>
 				<td>
 					<table>
 						<tr>
-							<td>
-								<canvas id="canvas2" width=300 height=16 ></canvas>
+							<td >
+								<p>x-axis</p>
+								<canvas id="canvas2" width=300 height=30 ></canvas>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<canvas id="canvas3" width=300 height=16 ></canvas>
+								<p>y-axis</p>
+								<canvas id="canvas3" width=300 height=30 ></canvas>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<canvas id="canvas4" width=300 height=16 ></canvas>
+								<p>z-axis</p>
+								<canvas id="canvas4" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>scale</p>
+								<canvas id="canvas5" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>x-translate</p>
+								<canvas id="canvas6" width=300 height=30 ></canvas>
 							</td>
 						</tr>
 					</table>
@@ -35,9 +51,19 @@
 	</body>
 	<script src=drawlib1.js></script>
 	<script>
+		const PI = 3.1415926;
+
+		var xTheta0 = 2;
+		var yTheta0 = 2;
+		var zTheta0 = 2;
+		var scale0 = 1.0;
+		var translate0 = 0.3;
+
 		var xTheta;
 		var yTheta;
 		var zTheta;
+		var scale;
+		var translate;
 
 		function Point(x,y,z){
 			this.x = x;
@@ -112,8 +138,8 @@
 			
 		}
 
-		var width = 300;
-		var height = 300;
+		var width = 800;
+		var height = 500;
 		function tranx(x){
 			return width/2 + x*(width/2);
 		}
@@ -122,8 +148,14 @@
 		}
 
 		var canvas = initCanvas("canvas1");
+
+
+
+
 		canvas.update = function(ctx){
 			var points = [];
+
+			//the first cube
 			points[0] = new Point(-0.5, -0.5, -0.5);
 			points[1] = new Point(0.5, -0.5, -0.5);
 			points[2] = new Point(0.5, 0.5, -0.5);
@@ -132,13 +164,14 @@
 			points[5] = new Point(0.5, -0.5, 0.5);
 			points[6] = new Point(0.5, 0.5, 0.5);
 			points[7] = new Point(-0.5, 0.5, 0.5);
+
 			for (var i=0; i<8; i++){
 				//points[i].translate(0.2,0.3,0.4);
 				points[i].rotateX(xTheta);
 				points[i].rotateY(yTheta);
 				points[i].rotateZ(zTheta);
-				//points[i].translate(0.8,0.3,0.4);
-				points[i].scale(1, 1, 1);
+				points[i].translate(translate,0,0);
+				points[i].scale(scale, scale, scale);
 				//console.log(points[i].x, points[i].y);
 				//translate to px
 				points[i].x = tranx(points[i].x);
@@ -173,19 +206,81 @@
 			ctx.stroke();
 			//console.log("hello");
 
+			//the second cube
+			points[0+8] = new Point(-0.5, -0.5, -0.5);
+			points[1+8] = new Point(0.5, -0.5, -0.5);
+			points[2+8] = new Point(0.5, 0.5, -0.5);
+			points[3+8] = new Point(-0.5, 0.5, -0.5);
+			points[4+8] = new Point(-0.5, -0.5, 0.5);
+			points[5+8] = new Point(0.5, -0.5, 0.5);
+			points[6+8] = new Point(0.5, 0.5, 0.5);
+			points[7+8] = new Point(-0.5, 0.5, 0.5);
+
+			for (var i=0+8; i<8+8; i++){
+				//points[i].translate(0.2,0.3,0.4);
+				points[i].rotateX(xTheta0);
+				points[i].rotateY(yTheta0);
+				points[i].rotateZ(zTheta0);
+				points[i].translate(translate0,0,0);
+				points[i].scale(scale0, scale0, scale0);
+				//console.log(points[i].x, points[i].y);
+				//translate to px
+				points[i].x = tranx(points[i].x);
+				points[i].y = trany(points[i].y);
+			}
+
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(points[0+8].x, points[0+8].y);
+			ctx.lineTo(points[1+8].x, points[1+8].y);
+			ctx.lineTo(points[2+8].x, points[2+8].y);
+			ctx.lineTo(points[3+8].x, points[3+8].y);
+			ctx.lineTo(points[0+8].x, points[0+8].y);
+
+			ctx.moveTo(points[4+8].x, points[4+8].y);
+			ctx.lineTo(points[5+8].x, points[5+8].y);
+			ctx.lineTo(points[6+8].x, points[6+8].y);
+			ctx.lineTo(points[7+8].x, points[7+8].y);
+			ctx.lineTo(points[4+8].x, points[4+8].y);
+
+			ctx.moveTo(points[0+8].x, points[0+8].y);
+			ctx.lineTo(points[4+8].x, points[4+8].y);
+
+			ctx.moveTo(points[1+8].x, points[1+8].y);
+			ctx.lineTo(points[5+8].x, points[5+8].y);
+
+			ctx.moveTo(points[2+8].x, points[2+8].y);
+			ctx.lineTo(points[6+8].x, points[6+8].y);
+
+			ctx.moveTo(points[3+8].x, points[3+8].y);
+			ctx.lineTo(points[7+8].x, points[7+8].y);
+			ctx.stroke();
+
+			//compute the differece
+			var dx = Math.abs(xTheta - xTheta0) / xTheta0;
+			var dy = Math.abs(yTheta - yTheta0) / yTheta0;
+			var dz = Math.abs(zTheta - zTheta0) / zTheta0;
+			var ds = Math.abs(scale - scale0) / scale0;
+			var dt = Math.abs(translate - translate0) / translate0;
+
+			if (dx<0.1 && dy<0.1 && dz<0.1 && ds<0.1 && dt<0.1){
+				console.log("success");
+				stopFlag = true;
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+			}
 		}
 
 		var canvas = initCanvas("canvas2");
 		canvas.update = function(ctx){
 			ctx.strokeStyle = 'red';
 			ctx.beginPath();
-			ctx.moveTo(10, 8);
-			ctx.lineTo(290, 8);
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
 			ctx.stroke();
 
 			ctx.beginPath();
-			ctx.arc(this.cursor.x, 8, 5, 0, 2 * Math.PI);
-			xTheta = this.cursor.x/20;
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			xTheta = PI*this.cursor.x/300;
 			//console.log(this.cursor.x);
 			ctx.stroke();
 			ctx.fillStyle="red";
@@ -197,13 +292,13 @@
 		canvas.update = function(ctx){
 			ctx.strokeStyle = 'red';
 			ctx.beginPath();
-			ctx.moveTo(10, 8);
-			ctx.lineTo(290, 8);
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
 			ctx.stroke();
 
 			ctx.beginPath();
-			ctx.arc(this.cursor.x, 8, 5, 0, 2 * Math.PI);
-			yTheta = this.cursor.x/20;
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			yTheta = PI*this.cursor.x/300;
 			//console.log(this.cursor.x);
 			ctx.stroke();
 			ctx.fillStyle="red";
@@ -214,13 +309,47 @@
 		canvas.update = function(ctx){
 			ctx.strokeStyle = 'red';
 			ctx.beginPath();
-			ctx.moveTo(10, 8);
-			ctx.lineTo(290, 8);
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
 			ctx.stroke();
 
 			ctx.beginPath();
-			ctx.arc(this.cursor.x, 8, 5, 0, 2 * Math.PI);
-			zTheta = this.cursor.x/20;
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			zTheta = PI*this.cursor.x/300;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
+
+		var canvas = initCanvas("canvas5");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			scale = this.cursor.x/150 + 0.3;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
+
+		var canvas = initCanvas("canvas6");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			translate = this.cursor.x/150 - 1;
 			//console.log(this.cursor.x);
 			ctx.stroke();
 			ctx.fillStyle="red";

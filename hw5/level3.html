@@ -1,3 +1,4 @@
+//level3
 <!DOCTYPE HTML>
 <html>
 	<head>
@@ -47,7 +48,6 @@
 				</td>
 			</tr>
 		</table>
-		<a href="level2.html"> Next Level </a>
 	</body>
 	<script src=drawlib1.js></script>
 	<script>
@@ -56,7 +56,7 @@
 		var xTheta0 = 2;
 		var yTheta0 = 2;
 		var zTheta0 = 2;
-		var scale0 = 1.0;
+		var scale0 = 0.8;
 		var translate0 = 0.3;
 
 		var xTheta;
@@ -149,9 +149,6 @@
 
 		var canvas = initCanvas("canvas1");
 
-
-
-
 		canvas.update = function(ctx){
 			var points = [];
 
@@ -164,8 +161,14 @@
 			points[5] = new Point(0.5, -0.5, 0.5);
 			points[6] = new Point(0.5, 0.5, 0.5);
 			points[7] = new Point(-0.5, 0.5, 0.5);
+			points[8] = new Point(0, 0, 0.8);
+			points[9] = new Point(0, 0, -0.8);
+			points[10] = new Point(0.8, 0, 0);
+			points[11] = new Point(-0.8, 0, 0);
+			points[12] = new Point(0, 0.8, 0);
+			points[13] = new Point(0, -0.8, 0);
 
-			for (var i=0; i<8; i++){
+			for (var i=0; i<14; i++){
 				//points[i].translate(0.2,0.3,0.4);
 				points[i].rotateX(xTheta);
 				points[i].rotateY(yTheta);
@@ -203,20 +206,102 @@
 
 			ctx.moveTo(points[3].x, points[3].y);
 			ctx.lineTo(points[7].x, points[7].y);
+
+			ctx.moveTo(points[0].x, points[0].y);
+			ctx.lineTo(points[9].x, points[9].y);
+
+			ctx.moveTo(points[1].x, points[1].y);
+			ctx.lineTo(points[9].x, points[9].y);
+
+			ctx.moveTo(points[2].x, points[2].y);
+			ctx.lineTo(points[9].x, points[9].y);
+
+			ctx.moveTo(points[3].x, points[3].y);
+			ctx.lineTo(points[9].x, points[9].y);
+
+			ctx.moveTo(points[4].x, points[4].y);
+			ctx.lineTo(points[8].x, points[8].y);
+
+			ctx.moveTo(points[5].x, points[5].y);
+			ctx.lineTo(points[8].x, points[8].y);
+
+			ctx.moveTo(points[6].x, points[6].y);
+			ctx.lineTo(points[8].x, points[8].y);
+
+			ctx.moveTo(points[7].x, points[7].y);
+			ctx.lineTo(points[8].x, points[8].y);
+
+			// 0, 1, 4, 5: 13
+			ctx.moveTo(points[0].x, points[0].y);
+			ctx.lineTo(points[13].x, points[13].y);
+
+			ctx.moveTo(points[1].x, points[1].y);
+			ctx.lineTo(points[13].x, points[13].y);
+
+			ctx.moveTo(points[4].x, points[4].y);
+			ctx.lineTo(points[13].x, points[13].y);
+
+			ctx.moveTo(points[5].x, points[5].y);
+			ctx.lineTo(points[13].x, points[13].y);
+
+			// 1, 2, 5, 6: 10
+			ctx.moveTo(points[1].x, points[1].y);
+			ctx.lineTo(points[10].x, points[10].y);
+
+			ctx.moveTo(points[2].x, points[2].y);
+			ctx.lineTo(points[10].x, points[10].y);
+
+			ctx.moveTo(points[5].x, points[5].y);
+			ctx.lineTo(points[10].x, points[10].y);
+
+			ctx.moveTo(points[6].x, points[6].y);
+			ctx.lineTo(points[10].x, points[10].y);
+
+			// 2, 3, 6, 7: 12
+			ctx.moveTo(points[2].x, points[2].y);
+			ctx.lineTo(points[12].x, points[12].y);
+
+			ctx.moveTo(points[3].x, points[3].y);
+			ctx.lineTo(points[12].x, points[12].y);
+
+			ctx.moveTo(points[6].x, points[6].y);
+			ctx.lineTo(points[12].x, points[12].y);
+
+			ctx.moveTo(points[7].x, points[7].y);
+			ctx.lineTo(points[12].x, points[12].y);
+
+			// 3, 0, 7, 4: 11
+			ctx.moveTo(points[3].x, points[3].y);
+			ctx.lineTo(points[11].x, points[11].y);
+
+			ctx.moveTo(points[0].x, points[0].y);
+			ctx.lineTo(points[11].x, points[11].y);
+
+			ctx.moveTo(points[7].x, points[7].y);
+			ctx.lineTo(points[11].x, points[11].y);
+
+			ctx.moveTo(points[4].x, points[4].y);
+			ctx.lineTo(points[11].x, points[11].y);
 			ctx.stroke();
 			//console.log("hello");
 
 			//the second cube
-			points[0+8] = new Point(-0.5, -0.5, -0.5);
-			points[1+8] = new Point(0.5, -0.5, -0.5);
-			points[2+8] = new Point(0.5, 0.5, -0.5);
-			points[3+8] = new Point(-0.5, 0.5, -0.5);
-			points[4+8] = new Point(-0.5, -0.5, 0.5);
-			points[5+8] = new Point(0.5, -0.5, 0.5);
-			points[6+8] = new Point(0.5, 0.5, 0.5);
-			points[7+8] = new Point(-0.5, 0.5, 0.5);
+			points[0+14] = new Point(-0.5, -0.5, -0.5);
+			points[1+14] = new Point(0.5, -0.5, -0.5);
+			points[2+14] = new Point(0.5, 0.5, -0.5);
+			points[3+14] = new Point(-0.5, 0.5, -0.5);
+			points[4+14] = new Point(-0.5, -0.5, 0.5);
+			points[5+14] = new Point(0.5, -0.5, 0.5);
+			points[6+14] = new Point(0.5, 0.5, 0.5);
+			points[7+14] = new Point(-0.5, 0.5, 0.5);
+			points[8+14] = new Point(0, 0, 0.8);
+			points[9+14] = new Point(0, 0, -0.8);
+			points[10+14] = new Point(0.8, 0, 0);
+			points[11+14] = new Point(-0.8, 0, 0);
+			points[12+14] = new Point(0, 0.8, 0);
+			points[13+14] = new Point(0, -0.8, 0);
 
-			for (var i=0+8; i<8+8; i++){
+			for (var i=0; i<14+14; i++){
 				//points[i].translate(0.2,0.3,0.4);
 				points[i].rotateX(xTheta0);
 				points[i].rotateY(yTheta0);
@@ -231,29 +316,105 @@
 
 			ctx.strokeStyle = 'red';
 			ctx.beginPath();
-			ctx.moveTo(points[0+8].x, points[0+8].y);
-			ctx.lineTo(points[1+8].x, points[1+8].y);
-			ctx.lineTo(points[2+8].x, points[2+8].y);
-			ctx.lineTo(points[3+8].x, points[3+8].y);
-			ctx.lineTo(points[0+8].x, points[0+8].y);
+			ctx.moveTo(points[0+14].x,points[0+14].y);
+			ctx.lineTo(points[1+14].x,points[1+14].y);
+			ctx.lineTo(points[2+14].x,points[2+14].y);
+			ctx.lineTo(points[3+14].x,points[3+14].y);
+			ctx.lineTo(points[0+14].x,points[0+14].y);
 
-			ctx.moveTo(points[4+8].x, points[4+8].y);
-			ctx.lineTo(points[5+8].x, points[5+8].y);
-			ctx.lineTo(points[6+8].x, points[6+8].y);
-			ctx.lineTo(points[7+8].x, points[7+8].y);
-			ctx.lineTo(points[4+8].x, points[4+8].y);
+			ctx.moveTo(points[4+14].x,points[4+14].y);
+			ctx.lineTo(points[5+14].x,points[5+14].y);
+			ctx.lineTo(points[6+14].x,points[6+14].y);
+			ctx.lineTo(points[7+14].x,points[7+14].y);
+			ctx.lineTo(points[4+14].x,points[4+14].y);
 
-			ctx.moveTo(points[0+8].x, points[0+8].y);
-			ctx.lineTo(points[4+8].x, points[4+8].y);
+			ctx.moveTo(points[0+14].x,points[0+14].y);
+			ctx.lineTo(points[4+14].x,points[4+14].y);
 
-			ctx.moveTo(points[1+8].x, points[1+8].y);
-			ctx.lineTo(points[5+8].x, points[5+8].y);
+			ctx.moveTo(points[1+14].x,points[1+14].y);
+			ctx.lineTo(points[5+14].x,points[5+14].y);
 
-			ctx.moveTo(points[2+8].x, points[2+8].y);
-			ctx.lineTo(points[6+8].x, points[6+8].y);
+			ctx.moveTo(points[2+14].x,points[2+14].y);
+			ctx.lineTo(points[6+14].x,points[6+14].y);
 
-			ctx.moveTo(points[3+8].x, points[3+8].y);
-			ctx.lineTo(points[7+8].x, points[7+8].y);
+			ctx.moveTo(points[3+14].x,points[3+14].y);
+			ctx.lineTo(points[7+14].x,points[7+14].y);
+
+			ctx.moveTo(points[0+14].x,points[0+14].y);
+			ctx.lineTo(points[9+14].x,points[9+14].y);
+
+			ctx.moveTo(points[1+14].x,points[1+14].y);
+			ctx.lineTo(points[9+14].x,points[9+14].y);
+
+			ctx.moveTo(points[2+14].x,points[2+14].y);
+			ctx.lineTo(points[9+14].x,points[9+14].y);
+
+			ctx.moveTo(points[3+14].x,points[3+14].y);
+			ctx.lineTo(points[9+14].x,points[9+14].y);
+
+			ctx.moveTo(points[4+14].x,points[4+14].y);
+			ctx.lineTo(points[8+14].x,points[8+14].y);
+
+			ctx.moveTo(points[5+14].x,points[5+14].y);
+			ctx.lineTo(points[8+14].x,points[8+14].y);
+
+			ctx.moveTo(points[6+14].x,points[6+14].y);
+			ctx.lineTo(points[8+14].x,points[8+14].y);
+
+			ctx.moveTo(points[7+14].x,points[7+14].y);
+			ctx.lineTo(points[8+14].x,points[8+14].y);
+
+			// 0, 1, 4, 5: 13
+			ctx.moveTo(points[0+14].x,points[0+14].y);
+			ctx.lineTo(points[13+14].x,points[13+14].y);
+
+			ctx.moveTo(points[1+14].x,points[1+14].y);
+			ctx.lineTo(points[13+14].x,points[13+14].y);
+
+			ctx.moveTo(points[4+14].x,points[4+14].y);
+			ctx.lineTo(points[13+14].x,points[13+14].y);
+
+			ctx.moveTo(points[5+14].x,points[5+14].y);
+			ctx.lineTo(points[13+14].x,points[13+14].y);
+
+			// 1, 2, 5, 6: 10
+			ctx.moveTo(points[1+14].x,points[1+14].y);
+			ctx.lineTo(points[10+14].x,points[10+14].y);
+
+			ctx.moveTo(points[2+14].x,points[2+14].y);
+			ctx.lineTo(points[10+14].x,points[10+14].y);
+
+			ctx.moveTo(points[5+14].x,points[5+14].y);
+			ctx.lineTo(points[10+14].x,points[10+14].y);
+
+			ctx.moveTo(points[6+14].x,points[6+14].y);
+			ctx.lineTo(points[10+14].x,points[10+14].y);
+
+			// 2, 3, 6, 7: 12
+			ctx.moveTo(points[2+14].x,points[2+14].y);
+			ctx.lineTo(points[12+14].x,points[12+14].y);
+
+			ctx.moveTo(points[3+14].x,points[3+14].y);
+			ctx.lineTo(points[12+14].x,points[12+14].y);
+
+			ctx.moveTo(points[6+14].x,points[6+14].y);
+			ctx.lineTo(points[12+14].x,points[12+14].y);
+
+			ctx.moveTo(points[7+14].x,points[7+14].y);
+			ctx.lineTo(points[12+14].x,points[12+14].y);
+
+			// 3, 0, 7, 4: 11
+			ctx.moveTo(points[3+14].x,points[3+14].y);
+			ctx.lineTo(points[11+14].x,points[11+14].y);
+
+			ctx.moveTo(points[0+14].x,points[0+14].y);
+			ctx.lineTo(points[11+14].x,points[11+14].y);
+
+			ctx.moveTo(points[7+14].x,points[7+14].y);
+			ctx.lineTo(points[11+14].x,points[11+14].y);
+
+			ctx.moveTo(points[4+14].x,points[4+14].y);
+			ctx.lineTo(points[11+14].x,points[11+14].y);
 			ctx.stroke();
 
 			//compute the differece
@@ -332,7 +493,7 @@
 
 			ctx.beginPath();
 			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
-			scale = this.cursor.x/150 + 0.3;
+			scale = this.cursor.x/200 + 0.1;
 			//console.log(this.cursor.x);
 			ctx.stroke();
 			ctx.fillStyle="red";
@@ -361,3 +522,4 @@
 	</script>
 
 </html>
+

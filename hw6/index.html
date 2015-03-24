@@ -43,6 +43,24 @@
 								<canvas id="canvas6" width=300 height=30 ></canvas>
 							</td>
 						</tr>
+						<tr>
+							<td>
+								<p>x-translate</p>
+								<canvas id="canvas7" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>x-translate</p>
+								<canvas id="canvas8" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>perspect</p>
+								<canvas id="canvas9" width=300 height=30 ></canvas>
+							</td>
+						</tr>
 					</table>
 				</td>
 			</tr>
@@ -50,20 +68,23 @@
 		<a href="level2.html"> Next Level </a>
 	</body>
 	<script src=drawlib1.js></script>
+	<script src=shapes.js></script>
+	<script src=noise.js></script>
 	<script>
 		const PI = 3.1415926;
 
-		var xTheta0 = 2;
-		var yTheta0 = 2;
-		var zTheta0 = 2;
-		var scale0 = 1.0;
-		var translate0 = 0.3;
-
+		var n = new Noise();
+		console.log(n.noise([1,2,3,4,5]));
+		console.log(n.noise([1,2,3,4,5]));
+		console.log(n.noise([1,2,3,4,5]));
 		var xTheta;
 		var yTheta;
 		var zTheta;
 		var scale;
-		var translate;
+		var xtranslate;
+		var ytranslate;
+		var ztranslate;
+		var perspect;
 
 		function multiplyMatrix(m1, m2){
 			var newM = [[1,0,0,0],
@@ -134,7 +155,7 @@
 				this.matrix = multiplyMatrix(matrix, this.matrix);
 			}
 
-			this.prospect = function(z){
+			this.perspect = function(z){
 				matrix = [[1,0,0,0],
 						  [0,1,0,0],
 						  [0,0,1,0],
@@ -165,79 +186,46 @@
 		}
 
 		function perspect(point, f){
-			point.x = point.x*(-f)/point.z;
-			point.y = point.y*(-f)/point.z;
-			point.z = -f/point.z;
+			point.x = point.x*f/point.z;
+			point.y = point.y*f/point.z;
+			point.z = f/point.z;
 		}
 
 
 		var canvas = initCanvas("canvas1");
-		
+		/*
 		test = new Matrix();
 		test.rotateY(3);
 		console.log(test.matrix);
-		
+		*/
 
 
 
 		canvas.update = function(ctx){
-			var points = [];
-
-			//the first cube
-			points[0] = new Vector3(-0.5, -0.5, 0.5);
-			points[1] = new Vector3(0.5, -0.5, 0.5);
-			points[2] = new Vector3(0.5, 0.5, 0.5);
-			points[3] = new Vector3(-0.5, 0.5, 0.5);
-			points[4] = new Vector3(0,0,0);
-
+			//cylinder = new Cylinder(100, 100);
+			//sphere = new Sphere(100, 100);
+			//wave = new Wave(100, 100);
+			smallBird = new SmallBird(50, 50);
 
 			m = new Matrix();
-			newPoint = new Vector3(0.0, 0.0, 0.0);
-			//points[i].translate(0.2,0.3,0.4);
-			//m.rotateX(xTheta);
-			m.rotateY(yTheta);
-			//m.prospect(xTheta);
-			//m.rotateZ(zTheta);
-			//m.translate(translate,0,0);
-			//m.scale(scale, scale, scale);
-			for (var i=0; i<5; i++){
-				newPoint = new Vector3(0.0, 0.0, 0.0);
-				m.transform(points[i], newPoint);
-				points[i] = newPoint;
-
-
-				// console.log(points[i].x, points[i].y);
-				//translate to px
-				perspect(points[i], xTheta);
-
-				points[i].x = tranx(points[i].x);
-				points[i].y = trany(points[i].y);
-			}
-
-			ctx.strokeStyle = 'red';
-			ctx.beginPath();
-			ctx.moveTo(points[0].x, points[0].y);
-			ctx.lineTo(points[1].x, points[1].y);
-			ctx.lineTo(points[2].x, points[2].y);
-			ctx.lineTo(points[3].x, points[3].y);
-			ctx.lineTo(points[0].x, points[0].y);
-
-
-			ctx.moveTo(points[0].x, points[0].y);
-			ctx.lineTo(points[4].x, points[4].y);
-
-			ctx.moveTo(points[1].x, points[1].y);
-			ctx.lineTo(points[4].x, points[4].y);
-
-			ctx.moveTo(points[2].x, points[2].y);
-			ctx.lineTo(points[4].x, points[4].y);
-
-			ctx.moveTo(points[3].x, points[3].y);
-			ctx.lineTo(points[4].x, points[4].y);
-			ctx.stroke();
-			//console.log("hello");
-
+			m.rotateX(xTheta);
+		    m.rotateY(yTheta);
+			m.rotateZ(zTheta);
+			m.perspect(perspect);
+			m.translate(xtranslate,ytranslate,ztranslate);
+			m.scale(scale, scale, scale);
 			
+			//cylinder.transform(m);
+			//cylinder.draw(ctx, width, height);	
+
+			//sphere.transform(m);
+			//sphere.draw(ctx, width, height);
+
+			//wave.transform(m);
+			//wave.draw(ctx, width, height);
+
+			smallBird.transform(m);
+			smallBird.draw(ctx, width, height);
 		}
 
 		var canvas = initCanvas("canvas2");
@@ -302,7 +290,7 @@
 
 			ctx.beginPath();
 			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
-			scale = this.cursor.x/150 + 0.3;
+			scale = this.cursor.x/150 + 0.05;
 			//console.log(this.cursor.x);
 			ctx.stroke();
 			ctx.fillStyle="red";
@@ -319,13 +307,63 @@
 
 			ctx.beginPath();
 			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
-			translate = this.cursor.x/150 - 1;
+			xtranslate = this.cursor.x/150 - 1;
 			//console.log(this.cursor.x);
 			ctx.stroke();
 			ctx.fillStyle="red";
 			ctx.fill();	
 		}
 
+		var canvas = initCanvas("canvas7");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			ytranslate = this.cursor.x/150 - 1;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
+
+		var canvas = initCanvas("canvas8");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			ztranslate = this.cursor.x/150 - 1;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
+
+		var canvas = initCanvas("canvas9");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			perspect = this.cursor.x/150 - 1;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
 
 
 	</script>

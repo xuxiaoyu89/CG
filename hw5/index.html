@@ -52,109 +52,83 @@
 	<script src=drawlib1.js></script>
 	<script>
 		const PI = 3.1415926;
-
 		var xTheta0 = 2;
 		var yTheta0 = 2;
 		var zTheta0 = 2;
 		var scale0 = 1.0;
 		var translate0 = 0.3;
-
 		var xTheta;
 		var yTheta;
 		var zTheta;
 		var scale;
 		var translate;
-
-		function multiplyMatrix(m1, m2){
-			var newM = [[1,0,0,0],
-						[0,1,0,0],
-						[0,0,1,0],
-						[0,0,0,1]];
-			for (var i=0; i<4; i++){
-				for (var j=0; j<4; j++){
-					curr = 0;
-					for (var k=0; k<4; k++){
-						curr += m1[i][k]*m2[k][j]
-					}
-					newM[i][j] = curr
-				}
-			}
-			return newM
-		}
-
-		function Matrix(){
-			this.matrix = [[1,0,0,0],
-						   [0,1,0,0],
-						   [0,0,1,0],
-						   [0,0,0,1]];
+		function Point(x,y,z){
+			this.x = x;
+			this.y = y;
+			this.z = z;
 			this.identity = function(){
-				this.matrix = [[1,0,0,0],
-						   	   [0,1,0,0],
-						   	   [0,0,1,0],
-						       [0,0,0,1]];
+				m = [[1, 0, 0],
+					 [0, 1, 0],
+					 [0, 0, 1]];
+				var x = this.x;
+			    var y = this.y;
+			    var z = this.z;
+				this.x = m[0][0]*x + m[0][1]*y + m[0][2]*z;
+				this.y = m[1][0]*x + m[1][1]*y + m[1][2]*z;
+				this.z = m[2][0]*x + m[2][1]*y + m[2][2]*z;
 			}
-
-			this.translate = function(x, y, z){
-				matrix = [[1,0,0,x],
-						  [0,1,0,y],
-						  [0,0,1,z],
-						  [0,0,0,1]];
-				this.matrix = multiplyMatrix(matrix, this.matrix);
-			}
-
+			this.translate = function(x, y, z) {
+				this.x += x;
+				this.y += y;
+				this.z += z;
+			};
 			this.rotateX = function(theta){
-				matrix = [[1, 0, 0, 0],
-					 	  [0, Math.sin(theta), Math.cos(theta), 0],
-					 	  [0, -Math.cos(theta), Math.sin(theta), 0], 
-					 	  [0,0,0,1]];
-				this.matrix = multiplyMatrix(matrix, this.matrix);
-			}
-
+				m = [[1, 0, 0],
+					 [0, Math.sin(theta), Math.cos(theta)],
+					 [0, -Math.cos(theta), Math.sin(theta)]];
+				var x = this.x;
+			    var y = this.y;
+			    var z = this.z;
+				this.x = m[0][0]*x + m[0][1]*y + m[0][2]*z;
+				this.y = m[1][0]*x + m[1][1]*y + m[1][2]*z;
+				this.z = m[2][0]*x + m[2][1]*y + m[2][2]*z;
+			};
 			this.rotateY = function(theta){
-				matrix = [[Math.cos(theta), 0, Math.sin(theta), 0],
-					 	  [0, 1, 0, 0],
-					 	  [-Math.sin(theta), 0, Math.cos(theta), 0], 
-					 	  [0,0,0,1]];
-				this.matrix = multiplyMatrix(matrix, this.matrix);
-			}
-
+				m = [[Math.cos(theta), 0, Math.sin(theta)],
+					 [0, 1, 0],
+					 [-Math.sin(theta), 0, Math.cos(theta)]];
+				var x = this.x;
+			    var y = this.y;
+			    var z = this.z;
+				this.x = m[0][0]*x + m[0][1]*y + m[0][2]*z;
+				this.y = m[1][0]*x + m[1][1]*y + m[1][2]*z;
+				this.z = m[2][0]*x + m[2][1]*y + m[2][2]*z;
+			};
 			this.rotateZ = function(theta){
-				matrix = [[Math.sin(theta), Math.cos(theta), 0, 0],
-						  [-Math.cos(theta), Math.sin(theta),0, 0],
-						  [0,0,1,0],
-						  [0,0,0,1]];
-				this.matrix = multiplyMatrix(matrix, this.matrix);
-			}
-
+				m = [[Math.sin(theta), Math.cos(theta), 0],
+					 [-Math.cos(theta), Math.sin(theta), 0],
+					 [0, 0, 1]];
+			    var x = this.x;
+			    var y = this.y;
+			    var z = this.z;
+				this.x = m[0][0]*x + m[0][1]*y + m[0][2]*z;
+				this.y = m[1][0]*x + m[1][1]*y + m[1][2]*z;
+				this.z = m[2][0]*x + m[2][1]*y + m[2][2]*z;
+			};
+			
 			this.scale = function(x, y, z){
-				matrix = [[x,0,0,0],
-						  [0,y,0,0],
-						  [0,0,z,0],
-						  [0,0,0,1]];
-				this.matrix = multiplyMatrix(matrix, this.matrix);
-			}
-
-			this.prospect = function(z){
-				matrix = [[1,0,0,0],
-						  [0,1,0,0],
-						  [0,0,1,0],
-						  [0,0,z,1]];
-				this.matrix = multiplyMatrix(matrix, this.matrix);
-			}
-
-			this.transform = function(src, dst){
-				dst.x = this.matrix[0][0] * src.x + this.matrix[0][1] * src.y + this.matrix[0][2] * src.z + this.matrix[0][3];
-    			dst.y = this.matrix[1][0] * src.x + this.matrix[1][1] * src.y + this.matrix[1][2] * src.z + this.matrix[1][3];
-    			dst.z = this.matrix[2][0] * src.x + this.matrix[2][1] * src.y + this.matrix[2][2] * src.z + this.matrix[2][3];
-    			dst.w = this.matrix[3][0] * src.x + this.matrix[3][1] * src.y + this.matrix[3][2] * src.z + 1;
-    			dst.x = dst.x/dst.w;
-    			dst.y = dst.y/dst.w;
-    			dst.z = dst.z/dst.w;
- 			}
-
-
+				m = [[x, 0, 0],
+					 [0, y, 0],
+					 [0, 0, z]];
+				var x = this.x;
+			    var y = this.y;
+			    var z = this.z;
+				this.x = m[0][0]*x + m[0][1]*y + m[0][2]*z;
+				this.y = m[1][0]*x + m[1][1]*y + m[1][2]*z;
+				this.z = m[2][0]*x + m[2][1]*y + m[2][2]*z;
+			};
+			
 		}
-
 		var width = 800;
 		var height = 500;
 		function tranx(x){
@@ -163,57 +137,30 @@
 		function trany(y){
 			return height/2 - y*(width/2);
 		}
-
-		function perspect(point, f){
-			point.x = point.x*(-f)/point.z;
-			point.y = point.y*(-f)/point.z;
-			point.z = -f/point.z;
-		}
-
-
 		var canvas = initCanvas("canvas1");
-		
-		test = new Matrix();
-		test.rotateY(3);
-		console.log(test.matrix);
-		
-
-
-
 		canvas.update = function(ctx){
 			var points = [];
-
 			//the first cube
-			points[0] = new Vector3(-0.5, -0.5, 0.5);
-			points[1] = new Vector3(0.5, -0.5, 0.5);
-			points[2] = new Vector3(0.5, 0.5, 0.5);
-			points[3] = new Vector3(-0.5, 0.5, 0.5);
-			points[4] = new Vector3(0,0,0);
-
-
-			m = new Matrix();
-			newPoint = new Vector3(0.0, 0.0, 0.0);
-			//points[i].translate(0.2,0.3,0.4);
-			//m.rotateX(xTheta);
-			m.rotateY(yTheta);
-			//m.prospect(xTheta);
-			//m.rotateZ(zTheta);
-			//m.translate(translate,0,0);
-			//m.scale(scale, scale, scale);
-			for (var i=0; i<5; i++){
-				newPoint = new Vector3(0.0, 0.0, 0.0);
-				m.transform(points[i], newPoint);
-				points[i] = newPoint;
-
-
-				// console.log(points[i].x, points[i].y);
+			points[0] = new Point(-0.5, -0.5, -0.5);
+			points[1] = new Point(0.5, -0.5, -0.5);
+			points[2] = new Point(0.5, 0.5, -0.5);
+			points[3] = new Point(-0.5, 0.5, -0.5);
+			points[4] = new Point(-0.5, -0.5, 0.5);
+			points[5] = new Point(0.5, -0.5, 0.5);
+			points[6] = new Point(0.5, 0.5, 0.5);
+			points[7] = new Point(-0.5, 0.5, 0.5);
+			for (var i=0; i<8; i++){
+				//points[i].translate(0.2,0.3,0.4);
+				points[i].rotateX(xTheta);
+				points[i].rotateY(yTheta);
+				points[i].rotateZ(zTheta);
+				points[i].translate(translate,0,0);
+				points[i].scale(scale, scale, scale);
+				//console.log(points[i].x, points[i].y);
 				//translate to px
-				perspect(points[i], xTheta);
-
 				points[i].x = tranx(points[i].x);
 				points[i].y = trany(points[i].y);
 			}
-
 			ctx.strokeStyle = 'red';
 			ctx.beginPath();
 			ctx.moveTo(points[0].x, points[0].y);
@@ -221,25 +168,76 @@
 			ctx.lineTo(points[2].x, points[2].y);
 			ctx.lineTo(points[3].x, points[3].y);
 			ctx.lineTo(points[0].x, points[0].y);
-
-
+			ctx.moveTo(points[4].x, points[4].y);
+			ctx.lineTo(points[5].x, points[5].y);
+			ctx.lineTo(points[6].x, points[6].y);
+			ctx.lineTo(points[7].x, points[7].y);
+			ctx.lineTo(points[4].x, points[4].y);
 			ctx.moveTo(points[0].x, points[0].y);
 			ctx.lineTo(points[4].x, points[4].y);
-
 			ctx.moveTo(points[1].x, points[1].y);
-			ctx.lineTo(points[4].x, points[4].y);
-
+			ctx.lineTo(points[5].x, points[5].y);
 			ctx.moveTo(points[2].x, points[2].y);
-			ctx.lineTo(points[4].x, points[4].y);
-
+			ctx.lineTo(points[6].x, points[6].y);
 			ctx.moveTo(points[3].x, points[3].y);
-			ctx.lineTo(points[4].x, points[4].y);
+			ctx.lineTo(points[7].x, points[7].y);
 			ctx.stroke();
 			//console.log("hello");
-
-			
+			//the second cube
+			points[0+8] = new Point(-0.5, -0.5, -0.5);
+			points[1+8] = new Point(0.5, -0.5, -0.5);
+			points[2+8] = new Point(0.5, 0.5, -0.5);
+			points[3+8] = new Point(-0.5, 0.5, -0.5);
+			points[4+8] = new Point(-0.5, -0.5, 0.5);
+			points[5+8] = new Point(0.5, -0.5, 0.5);
+			points[6+8] = new Point(0.5, 0.5, 0.5);
+			points[7+8] = new Point(-0.5, 0.5, 0.5);
+			for (var i=0+8; i<8+8; i++){
+				//points[i].translate(0.2,0.3,0.4);
+				points[i].rotateX(xTheta0);
+				points[i].rotateY(yTheta0);
+				points[i].rotateZ(zTheta0);
+				points[i].translate(translate0,0,0);
+				points[i].scale(scale0, scale0, scale0);
+				//console.log(points[i].x, points[i].y);
+				//translate to px
+				points[i].x = tranx(points[i].x);
+				points[i].y = trany(points[i].y);
+			}
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(points[0+8].x, points[0+8].y);
+			ctx.lineTo(points[1+8].x, points[1+8].y);
+			ctx.lineTo(points[2+8].x, points[2+8].y);
+			ctx.lineTo(points[3+8].x, points[3+8].y);
+			ctx.lineTo(points[0+8].x, points[0+8].y);
+			ctx.moveTo(points[4+8].x, points[4+8].y);
+			ctx.lineTo(points[5+8].x, points[5+8].y);
+			ctx.lineTo(points[6+8].x, points[6+8].y);
+			ctx.lineTo(points[7+8].x, points[7+8].y);
+			ctx.lineTo(points[4+8].x, points[4+8].y);
+			ctx.moveTo(points[0+8].x, points[0+8].y);
+			ctx.lineTo(points[4+8].x, points[4+8].y);
+			ctx.moveTo(points[1+8].x, points[1+8].y);
+			ctx.lineTo(points[5+8].x, points[5+8].y);
+			ctx.moveTo(points[2+8].x, points[2+8].y);
+			ctx.lineTo(points[6+8].x, points[6+8].y);
+			ctx.moveTo(points[3+8].x, points[3+8].y);
+			ctx.lineTo(points[7+8].x, points[7+8].y);
+			ctx.stroke();
+			//compute the differece
+			var dx = Math.abs(xTheta - xTheta0) / xTheta0;
+			var dy = Math.abs(yTheta - yTheta0) / yTheta0;
+			var dz = Math.abs(zTheta - zTheta0) / zTheta0;
+			var ds = Math.abs(scale - scale0) / scale0;
+			var dt = Math.abs(translate - translate0) / translate0;
+			if (dx<0.1 && dy<0.1 && dz<0.1 && ds<0.1 && dt<0.1){
+				console.log("success");
+				alert("You made it!!!");
+				stopFlag = true;
+				ctx.clearRect(0, 0, canvas.width, canvas.height);
+			}
 		}
-
 		var canvas = initCanvas("canvas2");
 		canvas.update = function(ctx){
 			ctx.strokeStyle = 'red';
@@ -247,7 +245,6 @@
 			ctx.moveTo(0, 15);
 			ctx.lineTo(300, 15);
 			ctx.stroke();
-
 			ctx.beginPath();
 			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
 			xTheta = PI*this.cursor.x/300;
@@ -257,7 +254,6 @@
 			ctx.fill();
 			
 		}
-
 		var canvas = initCanvas("canvas3");
 		canvas.update = function(ctx){
 			ctx.strokeStyle = 'red';
@@ -265,16 +261,14 @@
 			ctx.moveTo(0, 15);
 			ctx.lineTo(300, 15);
 			ctx.stroke();
-
 			ctx.beginPath();
 			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
-			yTheta = PI*this.cursor.x/100;
+			yTheta = PI*this.cursor.x/300;
 			//console.log(this.cursor.x);
 			ctx.stroke();
 			ctx.fillStyle="red";
 			ctx.fill();	
 		}
-
 		var canvas = initCanvas("canvas4");
 		canvas.update = function(ctx){
 			ctx.strokeStyle = 'red';
@@ -282,7 +276,6 @@
 			ctx.moveTo(0, 15);
 			ctx.lineTo(300, 15);
 			ctx.stroke();
-
 			ctx.beginPath();
 			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
 			zTheta = PI*this.cursor.x/300;
@@ -291,7 +284,6 @@
 			ctx.fillStyle="red";
 			ctx.fill();	
 		}
-
 		var canvas = initCanvas("canvas5");
 		canvas.update = function(ctx){
 			ctx.strokeStyle = 'red';
@@ -299,7 +291,6 @@
 			ctx.moveTo(0, 15);
 			ctx.lineTo(300, 15);
 			ctx.stroke();
-
 			ctx.beginPath();
 			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
 			scale = this.cursor.x/150 + 0.3;
@@ -308,7 +299,6 @@
 			ctx.fillStyle="red";
 			ctx.fill();	
 		}
-
 		var canvas = initCanvas("canvas6");
 		canvas.update = function(ctx){
 			ctx.strokeStyle = 'red';
@@ -316,7 +306,6 @@
 			ctx.moveTo(0, 15);
 			ctx.lineTo(300, 15);
 			ctx.stroke();
-
 			ctx.beginPath();
 			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
 			translate = this.cursor.x/150 - 1;
@@ -325,9 +314,6 @@
 			ctx.fillStyle="red";
 			ctx.fill();	
 		}
-
-
-
 	</script>
 
 </html>

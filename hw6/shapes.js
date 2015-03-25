@@ -285,7 +285,135 @@ SmallBird.prototype = {
 }
 
 
+function Snake(d, l, direction){
+	this.head = [];
+	this.body = [];
+	var x, y, z;
+	x = 0;
+	for (var i=0; i<l; i++){
+		var circle = [];
+		for (var j=0; j<d; j++){
+			y = 0.2*Math.sin(2*j*PI/9);
+			z = 0.2*Math.cos(2*j*PI/9);
+			circle.push(new Vector3(x, y, z));
+		}
+		this.body.push(circle);
+	}
+	var theta, phi;
+	for (var i=0; i<3; i++){
+	    var line = [];
+	    if (direction == 1) phi = PI*(i+3)/5 -PI/2;
+	    else phi = PI*i/(5) - PI/2;
+	    x = 2*Math.sin(phi);
+	    for (var j=0; j<10; j++){
+	          theta = 2*PI*j/(10);
+	          y = Math.cos(phi)*Math.sin(theta);
+	          z = Math.cos(phi)*Math.cos(theta);
+	          line.push(new Vector3(x,y,z));
+	    }
+	    this.head.push(line);
+	}
 
+}
+
+Snake.prototype = {
+	transform: function(m, direction){
+
+		var localM = new Matrix();
+		for (var i=1; i<this.body.length; i++){
+			localM.identity();
+			localM.translate(-0.2*direction, 0, 0);
+			localM.scale(1, (30-i/6)/30, (30-i/6)/30);
+			localM.rotateY(0.05*Math.sin(4*time + PI/2 -i));
+      		//if ((i/5)%2 == 1) localM.rotateY(-0.05*Math.sin(2*time + PI/2));
+			for (var j=0; j<this.body[0].length; j++){
+				localM.transform(this.body[i-1][j], this.body[i][j]);
+			}
+		}
+
+
+ 		
+		for (var i=0; i<this.head.length; i++){
+	      	for (var j=0; j<this.head[0].length;j++){
+	      		var newPoint = new Vector3(0,0,0);
+	      		m.transform(this.head[i][j], newPoint);
+	      		this.head[i][j] = newPoint;
+	      	}
+      	}
+
+		for (var i=0; i<this.body.length; i++){
+	      	for (var j=0; j<this.body[0].length;j++){
+	      		var newPoint = new Vector3(0,0,0);
+	      		m.transform(this.body[i][j], newPoint);
+	      		this.body[i][j] = newPoint;
+	      	}
+      	}
+
+      	/*
+      	for (var i=0; i<this.head.length; i++){
+      		for (var j=0; j<this.head[0].length;j++){
+	      		var newPoint = new Vector3(0,0,0);
+	      		m.transform(this.body[i][j], newPoint);
+	      		this.head[i][j] = newPoint;
+      		}
+      	}
+		*/
+	},
+
+	draw: function(ctx, height, width){
+		for (var i=0; i<this.head.length; i++){
+      		for (var j=0; j<this.head[0].length;j++){
+	      		this.head[i][j].x = width/2 + this.head[i][j].x*(width/2);
+	      		this.head[i][j].y = height/2 - this.head[i][j].y*(width/2);
+      		}
+      	}
+
+		for (var i=0; i<this.body.length; i++){
+			for (var j=0; j<this.body[0].length; j++){
+				this.body[i][j].x = width/2 + this.body[i][j].x*(width/2);
+	      		this.body[i][j].y = height/2 - this.body[i][j].y*(width/2);
+			}
+		}
+
+		ctx.strokeStyle = 'red';
+		ctx.beginPath();
+		ctx.lineWidth = 1;
+
+		for (var i=0; i<this.head.length; i++){
+		      ctx.moveTo(this.head[i][0].x, this.head[i][0].y);
+		      for (var j=1; j<this.head[0].length;j++){
+		            ctx.lineTo(this.head[i][j].x, this.head[i][j].y);
+		      }
+		      ctx.lineTo(this.head[i][0].x, this.head[i][0].y);
+		}
+		for (var i=0; i<this.head[0].length; i++){
+		      ctx.moveTo(this.head[0][i].x, this.head[0][i].y);
+		      for (var j=0; j<this.head.length;j++){
+		            ctx.lineTo(this.head[j][i].x, this.head[j][i].y);
+		      }
+		            
+		}
+
+		
+		for (var i=0; i<this.body.length; i++){
+			ctx.moveTo(this.body[i][0].x, this.body[i][0].y);
+	  		for (var j=1; j<this.body[0].length;j++){
+	  			ctx.lineTo(this.body[i][j].x, this.body[i][j].y);
+	  		}
+	  		ctx.lineTo(this.body[i][0].x, this.body[i][0].y);
+	  	}
+		for (var i=0; i<this.body[0].length; i++){
+			ctx.moveTo(this.body[0][i].x, this.body[0][i].y);
+	  		for (var j=0; j<this.body.length;j++){
+	  			ctx.lineTo(this.body[j][i].x, this.body[j][i].y);
+	  		}
+	  			
+	  	}
+	  	ctx.stroke();
+
+	},
+
+}
 
 
 

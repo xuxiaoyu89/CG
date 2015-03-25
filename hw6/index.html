@@ -4,12 +4,10 @@
 	</head>
 	
 	<body>
-		<p>This is a boring game, the goal of the game is to match the two object by moving the left one</p>
-		<p>Have a try!</p>
 		<table>
 			<tr>
 				<td>
-					<canvas id="canvas1" width=800 height=500 style="border:1px solid #d3d3d3;"></canvas>
+					<canvas id="canvas1" width=1000 height=750 style="border:1px solid #d3d3d3;"></canvas>
 				</td>
 				<td>
 					<table>
@@ -33,39 +31,54 @@
 						</tr>
 						<tr>
 							<td>
-								<p>scale</p>
+								<p>perspect</p>
 								<canvas id="canvas5" width=300 height=30 ></canvas>
 							</td>
 						</tr>
+					</table>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<canvas id="canvas6" width=1000 height=750 style="border:1px solid #d3d3d3;"></canvas>
+				</td>
+				<td>
+					<table>
 						<tr>
-							<td>
-								<p>x-translate</p>
-								<canvas id="canvas6" width=300 height=30 ></canvas>
-							</td>
-						</tr>
-						<tr>
-							<td>
-								<p>x-translate</p>
+							<td >
+								<p>x-axis</p>
 								<canvas id="canvas7" width=300 height=30 ></canvas>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<p>x-translate</p>
+								<p>y-axis</p>
 								<canvas id="canvas8" width=300 height=30 ></canvas>
 							</td>
 						</tr>
 						<tr>
 							<td>
-								<p>perspect</p>
+								<p>z-axis</p>
 								<canvas id="canvas9" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>scale</p>
+								<canvas id="canvas10" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>perspect</p>
+								<canvas id="canvas11" width=300 height=30 ></canvas>
 							</td>
 						</tr>
 					</table>
 				</td>
 			</tr>
 		</table>
-		<a href="level2.html"> Next Level </a>
 	</body>
 	<script src=drawlib1.js></script>
 	<script src=shapes.js></script>
@@ -73,18 +86,16 @@
 	<script>
 		const PI = 3.1415926;
 
-		var n = new Noise();
-		console.log(n.noise([1,2,3,4,5]));
-		console.log(n.noise([1,2,3,4,5]));
-		console.log(n.noise([1,2,3,4,5]));
-		var xTheta;
-		var yTheta;
-		var zTheta;
-		var scale;
+		
+		var xTheta, xTheta1;
+		var yTheta, yTheta1;
+		var zTheta, zTheta1;
+		var scale, scale1;
 		var xtranslate;
 		var ytranslate;
 		var ztranslate;
-		var perspect;
+		var perspect, perspect1;
+		
 
 		function multiplyMatrix(m1, m2){
 			var newM = [[1,0,0,0],
@@ -176,8 +187,8 @@
 
 		}
 
-		var width = 800;
-		var height = 500;
+		var width = 1000;
+		var height = 750;
 		function tranx(x){
 			return width/2 + x*(width/2);
 		}
@@ -193,40 +204,97 @@
 
 
 		var canvas = initCanvas("canvas1");
-		/*
-		test = new Matrix();
-		test.rotateY(3);
-		console.log(test.matrix);
-		*/
-
-
-
+		var xpos = 1.0;
 		canvas.update = function(ctx){
+
+			var temp = Math.sin(time/6);
+			var direction = 0;
+			if (temp> 0){
+				direction = 1;
+				xpos += 1/400;
+			}
+			else {
+				xpos -= 1/400;
+				direction = -1;
+			}
+
 			//cylinder = new Cylinder(100, 100);
 			//sphere = new Sphere(100, 100);
 			//wave = new Wave(100, 100);
 			smallBird = new SmallBird(50, 50);
+			snake = new Snake(10, 30, direction);
+			snake1 = new Snake(10, 30, -direction);
+
 
 			m = new Matrix();
+			m.scale(0.3,0.3,0.3);
 			m.rotateX(xTheta);
 		    m.rotateY(yTheta);
-			m.rotateZ(zTheta);
+			m.rotateZ(1.6);
 			m.perspect(perspect);
-			m.translate(xtranslate,ytranslate,ztranslate);
-			m.scale(scale, scale, scale);
+			//xpos += Math.sin(time/10)/600;  
+			m.translate(xpos, 0.4, 0);
+			snake.transform(m, direction);
+			snake.draw(ctx, width/2, height/2);
+
+
+			m.identity();
+			m.scale(0.3,0.3,0.3);
+			m.rotateX(xTheta);
+		    m.rotateY(yTheta);
+			m.rotateZ(1.6);
+			m.perspect(perspect);
+			m.translate(-xpos+3.14, -2, 0);
+			snake1.transform(m, -direction);
+			snake1.draw(ctx, width/2, height/2)
+
+
+
 			
-			//cylinder.transform(m);
-			//cylinder.draw(ctx, width, height);	
-
-			//sphere.transform(m);
-			//sphere.draw(ctx, width, height);
-
-			//wave.transform(m);
-			//wave.draw(ctx, width, height);
-
-			smallBird.transform(m);
-			smallBird.draw(ctx, width, height);
+			m1 = new Matrix();
+			m1.rotateX(xTheta);
+		    m1.rotateY(1.4);
+			m1.rotateZ(0);
+			m1.perspect(perspect);
+			m1.translate(1,Math.sin(time/6),0);
+			m1.scale(0.3, 0.3, 0.3);
+			smallBird.transform(m1);
+			smallBird.draw(ctx, width/2, height/2);
+			
 		}
+
+		
+
+		var canvas = initCanvas("canvas6");
+		canvas.update = function(ctx){
+
+			cylinder = new Cylinder(100, 100);
+			//sphere = new Sphere(100, 100);
+			wave = new Wave(100, 100);
+
+			m = new Matrix();
+			m.scale(scale1,scale1,scale1);
+			m.rotateX(xTheta1);
+		    m.rotateY(yTheta1);
+			m.rotateZ(zTheta1);
+			m.perspect(perspect1);
+			//xpos += Math.sin(time/10)/600;  
+			//m.translate(xpos, 0.4, 0);
+			m.translate(-0.2, 0, -2);
+			cylinder.transform(m);
+			cylinder.draw(ctx, width, height);
+			/*
+			m.translate(1, 0, 0);
+			sphere.transform(m)
+			sphere.draw(ctx, width, height);
+			*/
+
+			m.translate(1.0, 0.7, 0);
+			wave.transform(m);
+			wave.draw(ctx, width, height);	
+		}
+
+
 
 		var canvas = initCanvas("canvas2");
 		canvas.update = function(ctx){
@@ -280,6 +348,7 @@
 			ctx.fill();	
 		}
 
+
 		var canvas = initCanvas("canvas5");
 		canvas.update = function(ctx){
 			ctx.strokeStyle = 'red';
@@ -290,30 +359,16 @@
 
 			ctx.beginPath();
 			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
-			scale = this.cursor.x/150 + 0.05;
+			perspect = 0.5 - this.cursor.x/300;
 			//console.log(this.cursor.x);
 			ctx.stroke();
 			ctx.fillStyle="red";
 			ctx.fill();	
 		}
 
-		var canvas = initCanvas("canvas6");
-		canvas.update = function(ctx){
-			ctx.strokeStyle = 'red';
-			ctx.beginPath();
-			ctx.moveTo(0, 15);
-			ctx.lineTo(300, 15);
-			ctx.stroke();
 
-			ctx.beginPath();
-			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
-			xtranslate = this.cursor.x/150 - 1;
-			//console.log(this.cursor.x);
-			ctx.stroke();
-			ctx.fillStyle="red";
-			ctx.fill();	
-		}
 
+		
 		var canvas = initCanvas("canvas7");
 		canvas.update = function(ctx){
 			ctx.strokeStyle = 'red';
@@ -324,7 +379,7 @@
 
 			ctx.beginPath();
 			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
-			ytranslate = this.cursor.x/150 - 1;
+			xTheta1 = this.cursor.x/50 + 0.2;
 			//console.log(this.cursor.x);
 			ctx.stroke();
 			ctx.fillStyle="red";
@@ -341,7 +396,7 @@
 
 			ctx.beginPath();
 			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
-			ztranslate = this.cursor.x/150 - 1;
+			yTheta1 = this.cursor.x/50 + 0.5;
 			//console.log(this.cursor.x);
 			ctx.stroke();
 			ctx.fillStyle="red";
@@ -358,13 +413,45 @@
 
 			ctx.beginPath();
 			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
-			perspect = this.cursor.x/150 - 1;
+			zTheta1 = this.cursor.x/50 + 0.5;
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
+
+		var canvas = initCanvas("canvas10");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			scale1 = this.cursor.x/300+0.3;
 			//console.log(this.cursor.x);
 			ctx.stroke();
 			ctx.fillStyle="red";
 			ctx.fill();	
 		}
 
+		var canvas = initCanvas("canvas11");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			perspect1 = this.cursor.x/150;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
 
 	</script>
 

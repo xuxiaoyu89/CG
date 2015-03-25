@@ -324,7 +324,7 @@
 
 			ctx.beginPath();
 			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
-			yTheta = PI*this.cursor.x/100;
+			yTheta = PI*this.cursor.x/100 -1;
 			//console.log(this.cursor.x);
 			ctx.stroke();
 			ctx.fillStyle="red";

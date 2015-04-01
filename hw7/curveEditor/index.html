@@ -203,15 +203,25 @@
 				//change the angle of all flowers
 				for (var i=0; i<flowers.length; i++){
 					var flower = flowers[i];
-					flower.center.y += 1;
+
+					var catched = false;
+					for (var j=0; j<curves.length; j++){
+						if (curves[j].flowerCatched(flower)){
+							catched = true;
+						}
+					}
+					if (catched) continue;
+
+
+					flower.center.y += 1.5;
 					flower.center.x += Math.sin(time+flowerNoise[i]); 
 				}
 
 				var i=0;
 				while (i<flowers.length){
 					var flower = flowers[i];
-					flower.center.y += 1;
-					flower.center.x += Math.sin(time+flowerNoise[i]);
+					//flower.center.y += 1;
+					//flower.center.x += Math.sin(time+flowerNoise[i]);
 					if (flower.center.y > height){
 						flowers.splice(i, 1);
 						i--;

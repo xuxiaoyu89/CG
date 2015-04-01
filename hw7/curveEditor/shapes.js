@@ -51,6 +51,8 @@ function Curve(x, y, ifMatch, lastCurve){
 		this.pointB = new Point(x-40, y, 0);
 		this.pointC = new Point(x+40, y, 0);
 	}
+	this.xCoeff = [];
+	this.yCoeff = [];
 }
 
 Curve.prototype = {
@@ -73,6 +75,19 @@ Curve.prototype = {
 		return result;
 	},
 
+	flowerCatched: function(flower){
+		for (var t=0; t<=1.005; t+=0.005){
+			var currX = this.xCoeff[0]*Math.pow(t,3)+this.xCoeff[1]*Math.pow(t,2)+this.xCoeff[2]*Math.pow(t,1)+this.xCoeff[3];
+			var currY = this.yCoeff[0]*Math.pow(t,3)+this.yCoeff[1]*Math.pow(t,2)+this.yCoeff[2]*Math.pow(t,1)+this.yCoeff[3];
+
+			if (flower.isInFlower(currX, currY)){
+				return true;
+			}
+
+		}	
+		return false;
+	},
+
 	draw: function(ctx, showPoints, showLines){
 		ctx.strokeStyle = 'red';
 		ctx.beginPath();
@@ -81,12 +96,12 @@ Curve.prototype = {
 		var xCoeff, yCoeff;
 		var xnobs = [this.pointA.center.x, this.pointB.center.x, this.pointC.center.x, this.pointD.center.x];
 		var ynobs = [this.pointA.center.y, this.pointB.center.y, this.pointC.center.y, this.pointD.center.y];
-		xCoeff = this.dot(xnobs);
-		yCoeff = this.dot(ynobs);
+		this.xCoeff = this.dot(xnobs);
+		this.yCoeff = this.dot(ynobs);
 
 		for (var t=0; t<=1.01; t+=0.01){
-			var currX = xCoeff[0]*Math.pow(t,3)+xCoeff[1]*Math.pow(t,2)+xCoeff[2]*Math.pow(t,1)+xCoeff[3];
-			var currY = yCoeff[0]*Math.pow(t,3)+yCoeff[1]*Math.pow(t,2)+yCoeff[2]*Math.pow(t,1)+yCoeff[3];
+			var currX = this.xCoeff[0]*Math.pow(t,3)+this.xCoeff[1]*Math.pow(t,2)+this.xCoeff[2]*Math.pow(t,1)+this.xCoeff[3];
+			var currY = this.yCoeff[0]*Math.pow(t,3)+this.yCoeff[1]*Math.pow(t,2)+this.yCoeff[2]*Math.pow(t,1)+this.yCoeff[3];
 			ctx.lineTo(currX, currY);
 		}
 		//ctx.fill();

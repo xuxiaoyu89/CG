@@ -1,0 +1,474 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+	</head>
+	
+	<body>
+		<table>
+		    <tr>
+		    	<td>
+					<canvas id="canvas0" width=1000 height=750 style="border:1px solid #d3d3d3;"></canvas>
+				</td>
+		    </tr>
+			<tr>
+				<td>
+					<canvas id="canvas1" width=1000 height=750 style="border:1px solid #d3d3d3;"></canvas>
+				</td>
+				<td>
+					<table>
+						<tr>
+							<td >
+								<p>x-axis</p>
+								<canvas id="canvas2" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>y-axis</p>
+								<canvas id="canvas3" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+						<!--
+						<tr>
+							<td>
+								<p>z-axis</p>
+								<canvas id="canvas4" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+						-->
+						<tr>
+							<td>
+								<p>perspect</p>
+								<canvas id="canvas5" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+
+			<tr>
+				<td>
+					<canvas id="canvas6" width=1000 height=750 style="border:1px solid #d3d3d3;"></canvas>
+				</td>
+				<td>
+					<table>
+						<tr>
+							<td >
+								<p>x-axis</p>
+								<canvas id="canvas7" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>y-axis</p>
+								<canvas id="canvas8" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>z-axis</p>
+								<canvas id="canvas9" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>scale</p>
+								<canvas id="canvas10" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+						<tr>
+							<td>
+								<p>perspect</p>
+								<canvas id="canvas11" width=300 height=30 ></canvas>
+							</td>
+						</tr>
+					</table>
+				</td>
+			</tr>
+		</table>
+	</body>
+	<script src=drawlib1.js></script>
+	<script src=shapes.js></script>
+	<script>
+		const PI = 3.1415926;
+
+		
+		var xTheta, xTheta1;
+		var yTheta, yTheta1;
+		var zTheta, zTheta1;
+		var scale, scale1;
+		var xtranslate;
+		var ytranslate;
+		var ztranslate;
+		var perspect, perspect1;
+		
+
+		function multiplyMatrix(m1, m2){
+			var newM = [[1,0,0,0],
+						[0,1,0,0],
+						[0,0,1,0],
+						[0,0,0,1]];
+			for (var i=0; i<4; i++){
+				for (var j=0; j<4; j++){
+					curr = 0;
+					for (var k=0; k<4; k++){
+						curr += m1[i][k]*m2[k][j]
+					}
+					newM[i][j] = curr
+				}
+			}
+			return newM
+		}
+
+		function Matrix(){
+			this.matrix = [[1,0,0,0],
+						   [0,1,0,0],
+						   [0,0,1,0],
+						   [0,0,0,1]];
+			this.identity = function(){
+				this.matrix = [[1,0,0,0],
+						   	   [0,1,0,0],
+						   	   [0,0,1,0],
+						       [0,0,0,1]];
+			}
+
+			this.translate = function(x, y, z){
+				matrix = [[1,0,0,x],
+						  [0,1,0,y],
+						  [0,0,1,z],
+						  [0,0,0,1]];
+				this.matrix = multiplyMatrix(matrix, this.matrix);
+			}
+
+			this.rotateX = function(theta){
+				matrix = [[1, 0, 0, 0],
+					 	  [0, Math.sin(theta), Math.cos(theta), 0],
+					 	  [0, -Math.cos(theta), Math.sin(theta), 0], 
+					 	  [0,0,0,1]];
+				this.matrix = multiplyMatrix(matrix, this.matrix);
+			}
+
+			this.rotateY = function(theta){
+				matrix = [[Math.cos(theta), 0, Math.sin(theta), 0],
+					 	  [0, 1, 0, 0],
+					 	  [-Math.sin(theta), 0, Math.cos(theta), 0], 
+					 	  [0,0,0,1]];
+				this.matrix = multiplyMatrix(matrix, this.matrix);
+			}
+
+			this.rotateZ = function(theta){
+				matrix = [[Math.sin(theta), Math.cos(theta), 0, 0],
+						  [-Math.cos(theta), Math.sin(theta),0, 0],
+						  [0,0,1,0],
+						  [0,0,0,1]];
+				this.matrix = multiplyMatrix(matrix, this.matrix);
+			}
+
+			this.scale = function(x, y, z){
+				matrix = [[x,0,0,0],
+						  [0,y,0,0],
+						  [0,0,z,0],
+						  [0,0,0,1]];
+				this.matrix = multiplyMatrix(matrix, this.matrix);
+			}
+
+			this.perspect = function(z){
+				matrix = [[1,0,0,0],
+						  [0,1,0,0],
+						  [0,0,1,0],
+						  [0,0,z,1]];
+				this.matrix = multiplyMatrix(matrix, this.matrix);
+			}
+
+			this.transform = function(src, dst){
+				dst.x = this.matrix[0][0] * src.x + this.matrix[0][1] * src.y + this.matrix[0][2] * src.z + this.matrix[0][3];
+    			dst.y = this.matrix[1][0] * src.x + this.matrix[1][1] * src.y + this.matrix[1][2] * src.z + this.matrix[1][3];
+    			dst.z = this.matrix[2][0] * src.x + this.matrix[2][1] * src.y + this.matrix[2][2] * src.z + this.matrix[2][3];
+    			dst.w = this.matrix[3][0] * src.x + this.matrix[3][1] * src.y + this.matrix[3][2] * src.z + 1;
+    			dst.x = dst.x/dst.w;
+    			dst.y = dst.y/dst.w;
+    			dst.z = dst.z/dst.w;
+ 			}
+
+
+		}
+
+		var width = 1000;
+		var height = 750;
+		function tranx(x){
+			return width/2 + x*(width/2);
+		}
+		function trany(y){
+			return height/2 - y*(width/2);
+		}
+
+		function perspect(point, f){
+			point.x = point.x*f/point.z;
+			point.y = point.y*f/point.z;
+			point.z = f/point.z;
+		}
+
+
+		var canvas = initCanvas("canvas0");
+		canvas.update = function(ctx){
+			curve = new Curve();
+			m = new Matrix();
+			curve.transform(m);
+			curve.draw1(ctx, width, height);
+		}
+
+
+		var canvas = initCanvas("canvas1");
+		var xpos = 1.0;
+		canvas.update = function(ctx){
+
+			var temp = Math.sin(time/6);
+			var direction = 0;
+			if (temp> 0){
+				direction = 1;
+				xpos += 1/400;
+			}
+			else {
+				xpos -= 1/400;
+				direction = -1;
+			}
+
+			//cylinder = new Cylinder(100, 100);
+			//sphere = new Sphere(100, 100);
+			//wave = new Wave(100, 100);
+			smallBird = new SmallBird(50, 50);
+			snake = new Snake(10, 30, direction);
+			snake1 = new Snake(10, 30, -direction);
+
+
+			m = new Matrix();
+			m.scale(0.3,0.3,0.3);
+			m.rotateX(xTheta);
+		    m.rotateY(yTheta);
+			m.rotateZ(1.6);
+			m.perspect(perspect);
+			//xpos += Math.sin(time/10)/600;  
+			m.translate(xpos, 0.4, 0);
+			snake.transform(m, direction);
+			snake.draw(ctx, width/2, height/2);
+
+
+			m.identity();
+			m.scale(0.3,0.3,0.3);
+			m.rotateX(xTheta);
+		    m.rotateY(yTheta);
+			m.rotateZ(1.6);
+			m.perspect(perspect);
+			m.translate(-xpos+3.14, -2, 0);
+			snake1.transform(m, -direction);
+			snake1.draw(ctx, width/2, height/2)
+
+
+
+			
+			m1 = new Matrix();
+			m1.rotateX(xTheta);
+		    m1.rotateY(1.4);
+			m1.rotateZ(0);
+			m1.perspect(perspect);
+			m1.translate(1,Math.sin(time/6),0);
+			m1.scale(0.3, 0.3, 0.3);
+			smallBird.transform(m1);
+			smallBird.draw(ctx, width/2, height/2);
+			
+		}
+
+		
+
+		var canvas = initCanvas("canvas6");
+		canvas.update = function(ctx){
+
+			cylinder = new Cylinder(100, 100);
+			//sphere = new Sphere(100, 100);
+			wave = new Wave(100, 100);
+
+			m = new Matrix();
+			m.scale(scale1,scale1,scale1);
+			m.rotateX(xTheta1);
+		    m.rotateY(yTheta1);
+			m.rotateZ(zTheta1);
+			m.perspect(perspect1);
+			//xpos += Math.sin(time/10)/600;  
+			//m.translate(xpos, 0.4, 0);
+			m.translate(-0.2, 0, -2);
+			cylinder.transform(m);
+			cylinder.draw(ctx, width, height);
+			/*
+			m.translate(1, 0, 0);
+			sphere.transform(m)
+			sphere.draw(ctx, width, height);
+			*/
+
+			m.translate(1.0, 0.7, 0);
+			wave.transform(m);
+			wave.draw(ctx, width, height);	
+		}
+
+
+
+		var canvas = initCanvas("canvas2");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			xTheta = PI*this.cursor.x/300;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();
+			
+		}
+
+		var canvas = initCanvas("canvas3");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			yTheta = PI*this.cursor.x/100 -1;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
+
+		/*
+		var canvas = initCanvas("canvas4");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			zTheta = PI*this.cursor.x/300;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
+		*/
+
+		var canvas = initCanvas("canvas5");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			perspect = 0.5 - this.cursor.x/300;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
+
+
+
+		
+		var canvas = initCanvas("canvas7");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			xTheta1 = this.cursor.x/50 + 0.2;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
+
+		var canvas = initCanvas("canvas8");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			yTheta1 = this.cursor.x/50 + 0.5;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
+
+		var canvas = initCanvas("canvas9");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			zTheta1 = this.cursor.x/50 + 0.5;
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
+
+		var canvas = initCanvas("canvas10");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			scale1 = this.cursor.x/300+0.3;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
+
+		var canvas = initCanvas("canvas11");
+		canvas.update = function(ctx){
+			ctx.strokeStyle = 'red';
+			ctx.beginPath();
+			ctx.moveTo(0, 15);
+			ctx.lineTo(300, 15);
+			ctx.stroke();
+
+			ctx.beginPath();
+			ctx.arc(this.cursor.x, 15, 5, 0, 2 * Math.PI);
+			perspect1 = this.cursor.x/150;
+			//console.log(this.cursor.x);
+			ctx.stroke();
+			ctx.fillStyle="red";
+			ctx.fill();	
+		}
+
+	</script>
+
+</html>

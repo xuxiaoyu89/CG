@@ -1,0 +1,230 @@
+<!DOCTYPE HTML>
+<html>
+	<body>
+		<table>
+		    <tr>
+		    	<td>
+					<canvas id="canvas0" width=1000 height=750 style="border:1px solid #d3d3d3;"></canvas>
+				</td>
+
+				<td>
+					<table>
+						<tr>
+							<td>
+								Show Points: <input type="checkbox" id="points" checked> </br>
+								Show Lines: <input type="checkbox" id="lines" checked></br>
+								Add Matching Lines: <input type="checkbox" id="match"></br>
+								<button onclick="deleteCurve()">delete last curve</button></br>
+								Add flower: <input type="checkbox" id="flower">
+								choose number of petals<select id="PetalNumber">
+								  <option value="3">3</option>
+								  <option value="4">4</option>
+								  <option value="5">5</option>
+								  <option value="6">6</option>
+								  <option value="7">7</option>
+								  <option value="8">8</option>
+								  <option value="10">10</option>
+								  <option value="20">20</option>
+								</select>
+								<button onclick="deleteFlower()">delete last flower</button></br>
+								animate<input type="checkbox" id="animate"></br>
+							</td>
+							<td>
+								
+							</td>
+						</tr>
+					</table>
+				</td>
+		    </tr>
+		</table>
+	</body>
+
+	<script src=drawlib1.js></script>
+	<script src=shapes.js></script>
+	<script src=noise.js></script>
+	<script>
+		var width = 1000;
+		var height = 750;
+
+		var movedFlag = false;
+		var mouseDownFlag = false;
+		var movedPoint = undefined;
+		var movedFlower = undefined;
+
+		var canvas = initCanvas("canvas0");
+
+		//var points = [];
+		var curves = [];
+		var flowers = [];
+		var flowerNoise = [];
+
+		function deleteCurve(){
+			if (curves.length != 0){
+				curves.pop();
+			}
+		}
+
+		function deleteFlower(){
+			if (flowers.length != 0){
+				flowers.pop();
+			}
+		}
+
+		canvas.onclick = function(){
+			var ifMatch = document.getElementById("match").checked;
+			var ifFlower = document.getElementById("flower").checked;
+			var petalNumber = parseInt(document.getElementById("PetalNumber").value);
+
+			var x = this.cursor.x;
+			var y = this.cursor.y;
+
+			if (!movedFlag && ifFlower){
+				var flower = new Flower(x, y, 10, petalNumber);
+				var noiseObj = new Noise();
+				var noise = noiseObj.noise([flower.center.x, flower.center.y, time]);
+				flowers.push(flower);
+				flowerNoise.push(noise*50);
+				return;
+			}
+
+			if (!movedFlag){
+				var curve = undefined;
+				if (curves.length === 0){
+					curve = new Curve(x, y, false, undefined);
+				}
+				else{
+					curve = new Curve(x, y, ifMatch, curves[curves.length-1]);
+				}
+				curves.push(curve);
+			}
+		}
+
+		canvas.onmousedown = function(){
+			var x = this.cursor.x;
+			var y = this.cursor.y;
+			//console.log("mouse down on " + x + ", " + y);
+
+			//see if the mouse is in a curve point;
+			mouseDownFlag = true;
+			for (var i=0; i<curves.length; i++){
+				if(curves[i].pointA.isInCircle(x, y)){
+					curves[i].pointA.fillColor = "green";
+				}
+				if(curves[i].pointB.isInCircle(x, y)){
+					curves[i].pointB.fillColor = "green";
+				}
+				if(curves[i].pointC.isInCircle(x, y)){
+					curves[i].pointC.fillColor = "green";
+				}
+				if(curves[i].pointD.isInCircle(x, y)){
+					curves[i].pointD.fillColor = "green";
+				}
+				else{
+					curves[i].pointA.fillColor = "red";
+					curves[i].pointB.fillColor = "red";
+					curves[i].pointC.fillColor = "red";
+					curves[i].pointD.fillColor = "red";
+				}
+			}
+		}
+
+
+		canvas.onmouseup = function(){
+			var x = this.cursor.x;
+			var y = this.cursor.y;
+			for (var i=0; i<curves.length; i++){
+				curves[i].pointA.fillColor = "red";
+				curves[i].pointB.fillColor = "red";
+				curves[i].pointC.fillColor = "red";
+				curves[i].pointD.fillColor = "red";
+			}
+			movedPoint = undefined;
+			movedFlower = undefined;
+			mouseDownFlag = false;
+		}
+
+		document.onmousemove = function(){
+			//console.log(movedFlower);
+			if (mouseDownFlag){
+				var x = canvas.cursor.x;
+				var y = canvas.cursor.y;
+				movedFlag = true;
+				// move the point;
+				if (movedPoint === undefined && movedFlower === undefined){
+					for (var i=0; i<curves.length; i++){
+						if (curves[i].pointA.isInCircle(x, y)){
+							movedPoint = curves[i].pointA;
+							break;
+						}
+						if (curves[i].pointB.isInCircle(x, y)){
+							movedPoint = curves[i].pointB;
+							break;
+						}
+						if (curves[i].pointC.isInCircle(x, y)){
+							movedPoint = curves[i].pointC;
+							break;
+						}
+						if (curves[i].pointD.isInCircle(x, y)){
+							movedPoint = curves[i].pointD;
+							break;
+						}
+					}
+					for (var i=0; i<flowers.length; i++){
+						if (flowers[i].isInFlower(x, y)){
+							movedFlower = flowers[i];
+							break;
+						}
+					}
+
+				}
+				else{
+					if (movedPoint != undefined) movedPoint.setPosition(x, y);
+					else if (movedFlower != undefined) movedFlower.setPosition(x, y);
+				}
+			}
+			else{
+				movedFlag = false;
+			}
+		}
+
+		canvas.update = function(ctx){
+			var showPoints = document.getElementById("points").checked;
+			var showLines = document.getElementById("lines").checked;
+			var animateFlag = document.getElementById("animate").checked;
+
+			//console.log(flowers.length);
+
+			for (var i=0; i<curves.length; i++){
+				curves[i].draw(ctx, showPoints, showLines);
+			} 
+
+			if (animateFlag){
+				//change the position of all flowers
+				//change the angle of all flowers
+				for (var i=0; i<flowers.length; i++){
+					var flower = flowers[i];
+					flower.center.y += 1;
+					flower.center.x += Math.sin(time+flowerNoise[i]); 
+				}
+
+				var i=0;
+				while (i<flowers.length){
+					var flower = flowers[i];
+					flower.center.y += 1;
+					flower.center.x += Math.sin(time+flowerNoise[i]);
+					if (flower.center.y > height){
+						flowers.splice(i, 1);
+						i--;
+					}
+					i++;
+				}
+			}
+
+			for (var i=0; i<flowers.length; i++){
+				flowers[i].draw(ctx);
+			}
+		}
+
+	</script>
+
+</html>

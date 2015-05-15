@@ -18,7 +18,7 @@ function init() {
   light.position.set( -1, -1, -1 ).normalize();
   scene.add( light );
   var loader = new THREE.JSONLoader( true );
-  loader.load( "models/bulldog_04.json", function( geometry ) {
+  loader.load( "models/bulldog_03.json", function( geometry ) {
     mesh = new THREE.Mesh( geometry, new THREE.MeshLambertMaterial( { color: 0x606060, morphTargets: true } ) );
     mesh.scale.set( 1.5, 1.5, 1.5 );
     mesh.position.y = 10;

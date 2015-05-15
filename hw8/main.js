@@ -39,7 +39,7 @@ window.SimpleScene = function() {
 
       var that = this;
       (function tick() {
-         time = (new Date().getTime()) / 1000;
+         time = (new Date().getTime()) / 100;
          that.update(time);
          renderer.render(that.scene, camera);
          requestAnimationFrame(tick);
@@ -90,7 +90,7 @@ function Scene2() {
       //console.log(this.endPoint.x - this.startPoint.x);
       land.center.rotation.y = (this.lastVector.x + this.endPoint.x - this.startPoint.x)*PI/300;
       land.center.rotation.x = (this.lastVector.y + this.endPoint.y - this.startPoint.y)*PI/300;
-      var reachedFlag = dog.run(time, dog.position, bone.position);
+      dog.run(dog.position, bone.position);
       //console.log(bone.position.x, bone.position.y);
       //change the dogPosition and bonePosition
 

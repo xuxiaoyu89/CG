@@ -1,4 +1,20 @@
 //draw a dog and a people
+/*
+For the final project, I would like to do animating characters. 
+For the last homework, I draw a very simple dog and a bone, 
+for the project, and I would like to continue working on this.
+
+I would like to add more details to the characters.
+I would like to add more animation to it. For example, the dog will can bark, sit, walk, run, and jump. 
+Or other movements, like running to the bone and get it back, or wagging its tail when it sees a bone.
+The dog can listen to your orders to do this movements.
+
+I would also like to add some environment to the scene, some trees, flowers, rocks, sky, sun and wind.
+
+If I have time, I can let the dog to have different moods, when it is happy, it tends to run faster, 
+crazier, wags its tail more frequently. When its tired or bored, they tends to lay down and sleep. 
+*/
+
 
 function createCylinder(tx, ty, tz, rx, ry, rz, len){
 	var geometry = new THREE.CylinderGeometry( 0.1, 0.1, len, 100 );
@@ -114,7 +130,20 @@ function Dog(x, z){
 
 
 Dog.prototype = {
-	run: function(dest, dPos, bPos){
+	setPosition: function(x, z){
+		this.position.x = x;
+		this.position.y = z;
+		this.center.translateX(this.position.x);
+		this.center.translateZ(this.position.y);
+		//console.log("hello");	
+	},
+
+	setRotation: function(newDirection){
+		this.direction = newDirection;
+		this.center.rotation.y = -this.direction;
+	},
+
+	turn: function(dPos, bPos){
 		//console.log("running");
 		var dirVector = new Vec2(bPos.x-dPos.x, bPos.y-dPos.y);
 		var goalDir = Math.atan(dirVector.x/dirVector.y);
@@ -125,20 +154,39 @@ Dog.prototype = {
 			var turnStep;
 
 			if (diff > 0){
-				turnStep = 1.0/100.0;
+				turnStep = 1.0/50.0;
 			}
 			else {
-				turnStep = -1.0/100.0;
+				turnStep = -1.0/50.0;
 			}
-			this.direction += turnStep;
-			this.center.rotation.y = -this.direction;
-			//jump up and turn
+
+			var newDirection = this.direction + turnStep;
+			this.setRotation(newDirection);
 
 			return false;
 		}
 		
 		//this.center.rotation.y = dir;
 		return true;
+	},
+
+	run: function(dPos, bPos){
+		//this.turn(dPos, bPos);
+
+		/*
+		var dirVector = new Vec2(bPos.x-dPos.x, bPos.y-dPos.y);
+
+		if (Math.abs(dirVector.x) > 0.2){
+			var diff = new Vec2(dirVector.y/100, dirVector.y/100);
+			var goalDir = Math.atan(dirVector.x/dirVector.y);
+			var runStep = 0.1;
+			var newPosition = new Vec2(0,0);
+			newPosition.x = this.position.x + runStep*Math.sin(goalDir);
+			newPosition.y = this.position.y + runStep*Math.sin(goalDir);
+			this.setPosition(newPosition.x, newPosition.y);
+		}
+		*/
+		this.setPosition(this.position.x, this.position.y);
 	}
 }
 

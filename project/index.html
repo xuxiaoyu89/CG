@@ -2,11 +2,138 @@
 <html>
 <head>
 	<script src=three.js></script>
+	<script src=character.js></script>
 	<link rel="stylesheet" type="text/css" href="main.css">
 </head>
 <body>
-   	<div id="scene_2" class="frame">
-   	</div>
+
+	<table class="control">
+		<tr>
+			<td>
+				<table class="contrl_group">
+					<tr>
+						<td>
+							<p>rotate</p>
+						</td>
+						<td>
+							<div class="button">
+								<button type="button" onclick="rotateZP()">+</button>
+							</div>
+						</td>
+						<td>
+							<div class="button">
+								<button type="button" onclick="rotateZM()">-</button>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+
+			<td>
+				<table class="contrl_group">
+					<tr>
+						<td>
+							<p>camera height</p>
+						</td>
+						<td>
+							<div class="button">
+								<button type="button" onclick="moveUp()">+</button>
+							</div>
+						</td>
+						<td>
+							<div class="button">
+								<button type="button" onclick="moveDown()">-</button>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+
+			<td>
+				<table class="contrl_group">
+					<tr>
+						<td>
+							<p>zoom</p>
+						</td>
+						<td>
+							<div class="button">
+								<button type="button" onclick="zoomIn()">+</button>
+							</div>
+						</td>
+						<td>
+							<div class="button">
+								<button type="button" onclick="zoomOut()">-</button>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+		<tr>
+			<td>
+				<table class="contrl_group">
+					<tr>
+						<td>
+							<p>moving speed</p>
+						</td>
+						<td>
+							<div class="button">
+								<button type="button" onclick="speedUp()">+</button>
+							</div>
+						</td>
+						<td>
+							<div class="button">
+								<button type="button" onclick="speedDown()">-</button>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+
+		<tr>
+			<td>
+				<table class="contrl_group">
+					<tr>
+						<td>
+							<p>stand</p>
+						</td>
+						<td>
+							<div class="button1">
+								<button type="button" onclick="stand()">stand</button>
+							</div>
+						</td>
+						<td>
+							Happy <input type="checkbox" id="happy">
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+
+		<tr>
+			<td>
+				<table class="contrl_group">
+					<tr>
+						<td>
+							<div class="button">
+								<button type="button" onclick="sit()">sit</button>
+							</div>
+						</td>
+					</tr>
+				</table>
+			</td>
+		</tr>
+	</table>
+
+	<table class="frame">
+		<tr>
+			<td>
+				<div id="scene_2">
+   				</div>
+			</td>
+		</tr>
+	</table>
    	<script src=main.js></script>
 </body>
 </html>

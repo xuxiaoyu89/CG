@@ -1,14 +1,34 @@
 .frame {
 	margin-left: auto;
 	margin-right: auto;
-	width: 800px;
-	height: 800px;
-	border-style: groove;
+	width: 700px;
+	height: 700px;
 }
 
 .control {
 	margin-left: auto;
 	margin-right: auto;
-	width: 200px;
-	height: 30px;
+	width: 700px;
+	height: 40px;
+}
+
+.control_group {
+	margin-left: auto;
+	margin-right: auto;
+	width: 150px;
+	height: 20px;
+}
+
+.button {
+	margin-left: auto;
+	margin-right: auto;
+	width: 20px;
+	height: 20px;
+}
+
+.button1 {
+	margin-left: auto;
+	margin-right: auto;
+	width: 60px;
+	height: 20px;
 }

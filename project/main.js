@@ -2,7 +2,7 @@
 
 var container, stats;
 var camera, scene, projector, renderer;
-var mesh, land;
+var mesh, mesh1, land;
 var zRotation = 0;
 var yPosition = 8;
 var cameraY = 10;
@@ -30,9 +30,6 @@ function init() {
   camera.target = new THREE.Vector3( 0, 10, 0 );
   scene = new THREE.Scene();
 
-  land = new Land();
-  scene.add(land.center);
-
   sky = new Sky();
   scene.add(sky.cube);
 
@@ -55,6 +52,13 @@ function init() {
     mesh.position.y = 10;
     scene.add( mesh );
   } );
+  
+ 
+
+
+  land = new Land();
+  scene.add(land.center);
+
   renderer = new THREE.WebGLRenderer();
   renderer.sortObjects = false;
   renderer.setSize( 700, 700 );
@@ -174,18 +178,23 @@ function moveDown(){
 }
 
 function zoomIn(){
-   radius -= 2;
+   radius -= 10;
 }
 
 function zoomOut(){ 
-   radius += 2;
+   radius += 10;
 }
 
 function speedUp(){
   if (speed == 0.0) speed = 1;
   sitFlag = false;
-  if (speed > 3.0) return;
-  speed += 0.1;
+  if (speed > 4.0) return;
+  if (speed > 1.5){
+    speed += 0.3;
+  }
+  else{
+     speed += 0.1;
+  }
 }
 
 function speedDown(){

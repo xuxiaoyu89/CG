@@ -54,7 +54,7 @@ function Land(){
 
 function createCube1(rx,ry,rz,tx,ty,tz){
 	var geometry = new THREE.BoxGeometry( 1, 0.01, 1 );
-	var material = new THREE.MeshBasicMaterial( {color: 0x6699FF} );
+	var material = new THREE.MeshBasicMaterial( {color: 0x000066} );
 	var mesh = new THREE.Mesh(geometry, material);
 	mesh.translateX(tx);
 	mesh.translateY(ty);

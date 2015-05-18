@@ -53,6 +53,15 @@ function init() {
     scene.add( mesh );
   } );
   
+
+   
+  var geometry = new THREE.SphereGeometry( 20, 32, 32 );
+  var material = new THREE.MeshBasicMaterial( {color: 0xffff00} );
+  var sphere = new THREE.Mesh( geometry, material );
+  sphere.translateX(-100);
+  sphere.translateY(100);
+  sphere.translateZ(-500);
+  scene.add( sphere );
  
 
 
